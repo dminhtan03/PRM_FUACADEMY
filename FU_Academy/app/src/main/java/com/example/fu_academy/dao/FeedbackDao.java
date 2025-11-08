@@ -16,4 +16,7 @@ public interface FeedbackDao {
 
     @Query("SELECT * FROM Feedback WHERE user_id = :userId")
     List<Feedback> getByUser(long userId);
+
+    @Query("SELECT * FROM Feedback WHERE student_id = :studentId ORDER BY date DESC")
+    List<Feedback> getByStudent(long studentId);
 }

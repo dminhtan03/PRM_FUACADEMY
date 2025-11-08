@@ -33,6 +33,9 @@ public class Schedule {
     @ColumnInfo(name = "status")
     public String status;
 
+    @ColumnInfo(name = "note")
+    public String note;
+
     public Schedule() {
     }
 
@@ -44,6 +47,17 @@ public class Schedule {
         this.room = room;
         this.type = type;
         this.status = status;
+    }
+
+    public Schedule(long id, long class_id, String date, String time, String room, String type, String status, String note) {
+        this.id = id;
+        this.class_id = class_id;
+        this.date = date;
+        this.time = time;
+        this.room = room;
+        this.type = type;
+        this.status = status;
+        this.note = note;
     }
 
     public long getId() {
@@ -100,5 +114,13 @@ public class Schedule {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 }

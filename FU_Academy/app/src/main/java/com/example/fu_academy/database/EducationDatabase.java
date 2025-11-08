@@ -9,9 +9,11 @@ import androidx.room.RoomDatabase;
 import android.content.Context;
 
 import com.example.fu_academy.dao.AssignmentDao;
+import com.example.fu_academy.dao.AttendanceDetailDao;
 import com.example.fu_academy.dao.ClassDao;
 import com.example.fu_academy.dao.CourseDao;
 import com.example.fu_academy.dao.EnrollmentDao;
+import com.example.fu_academy.dao.ExamDao;
 import com.example.fu_academy.dao.FeedbackDao;
 import com.example.fu_academy.dao.MaterialDao;
 import com.example.fu_academy.dao.NotificationDao;
@@ -19,9 +21,11 @@ import com.example.fu_academy.dao.ScheduleDao;
 import com.example.fu_academy.dao.SubmissionDao;
 import com.example.fu_academy.dao.UserDao;
 import com.example.fu_academy.entity.Assignment;
+import com.example.fu_academy.entity.AttendanceDetail;
 import com.example.fu_academy.entity.Class;
 import com.example.fu_academy.entity.Course;
 import com.example.fu_academy.entity.Enrollment;
+import com.example.fu_academy.entity.Exam;
 import com.example.fu_academy.entity.Feedback;
 import com.example.fu_academy.entity.Material;
 import com.example.fu_academy.entity.Notification;
@@ -33,9 +37,10 @@ import com.example.fu_academy.entity.User;
         entities = {
                 User.class, Course.class, Class.class, Enrollment.class,
                 Material.class, Assignment.class, Submission.class,
-                Notification.class, Feedback.class, Schedule.class
+                Notification.class, Feedback.class, Schedule.class,
+                Exam.class, AttendanceDetail.class
         },
-        version = 1,
+        version = 3,
         exportSchema = false
 )
 public abstract class EducationDatabase extends RoomDatabase {
@@ -53,6 +58,8 @@ public abstract class EducationDatabase extends RoomDatabase {
         public abstract NotificationDao notificationDao();
         public abstract FeedbackDao feedbackDao();
         public abstract ScheduleDao scheduleDao();
+        public abstract ExamDao examDao();
+        public abstract AttendanceDetailDao attendanceDetailDao();
 
         // --- Singleton Builder ---
         public static EducationDatabase getInstance(Context context) {

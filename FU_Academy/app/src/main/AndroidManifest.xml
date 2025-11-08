@@ -12,13 +12,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FU_Academy">
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<!--        <activity android:name=".activity.MainActivity" />-->
+        <activity android:name=".activity.StudentDashboardActivity" />
+        <activity android:name=".activity.WeeklyScheduleActivity" />
+        <activity android:name=".activity.MonthlyCalendarActivity" />
+        <activity android:name=".activity.ExamScheduleActivity" />
+        <activity android:name=".activity.AttendanceDetailActivity" />
+        <activity android:name=".activity.AcademicSummaryActivity" />
+        <activity android:name=".activity.FeedbackFormActivity" />
         <activity android:name=".activity.CourseListActivity" />
     </application>
 

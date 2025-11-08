@@ -19,8 +19,20 @@ public class Feedback {
     @ColumnInfo(name = "user_id", index = true)
     public long user_id;
 
+    @ColumnInfo(name = "student_id", index = true)
+    public long student_id;
+
+    @ColumnInfo(name = "subject")
+    public String subject;
+
     @ColumnInfo(name = "content")
     public String content;
+
+    @ColumnInfo(name = "category")
+    public String category; // course, lecturer, system
+
+    @ColumnInfo(name = "date")
+    public String date;
 
     @ColumnInfo(name = "rating")
     public int rating;
@@ -34,10 +46,15 @@ public class Feedback {
     public Feedback() {
     }
 
-    public Feedback(long id, long user_id, String content, int rating, String status, String response) {
+    public Feedback(long id, long user_id, long student_id, String subject, String content, 
+                    String category, String date, int rating, String status, String response) {
         this.id = id;
         this.user_id = user_id;
+        this.student_id = student_id;
+        this.subject = subject;
         this.content = content;
+        this.category = category;
+        this.date = date;
         this.rating = rating;
         this.status = status;
         this.response = response;
@@ -89,5 +106,37 @@ public class Feedback {
 
     public void setResponse(String response) {
         this.response = response;
+    }
+
+    public long getStudent_id() {
+        return student_id;
+    }
+
+    public void setStudent_id(long student_id) {
+        this.student_id = student_id;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

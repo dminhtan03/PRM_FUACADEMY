@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_dashboard"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Dashboard" />
+    
+    <item
+        android:id="@+id/nav_schedule"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Lịch" />
+    
+    <item
+        android:id="@+id/nav_exam"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="Thi" />
+    
+    <item
+        android:id="@+id/nav_attendance"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        android:title="Điểm Danh" />
+    
+    <item
+        android:id="@+id/nav_more"
+        android:icon="@android:drawable/ic_menu_more"
+        android:title="Thêm" />
+</menu>
