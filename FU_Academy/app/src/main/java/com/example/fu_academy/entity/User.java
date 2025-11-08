@@ -18,7 +18,7 @@ public class User {
     public String password;
 
     @ColumnInfo(name = "role")
-    public String role; // student, lecturer, admin
+    public String role; // student, lecturer
 
     @ColumnInfo(name = "phone")
     public String phone;
@@ -28,6 +28,18 @@ public class User {
 
     @ColumnInfo(name = "status")
     public String status;
+
+    @ColumnInfo(name = "address")
+    public String address;
+
+    @ColumnInfo(name = "gender")
+    public String gender;
+
+    @ColumnInfo(name = "major")
+    public String major;
+
+    @ColumnInfo(name = "lastLogin")
+    public String lastLogin;
 
     public User() {
     }
@@ -41,6 +53,21 @@ public class User {
         this.phone = phone;
         this.avatar = avatar;
         this.status = status;
+    }
+
+    public User(long user_id, String name, String email, String password, String role, String phone, String avatar, String status, String address, String gender, String major, String lastLogin) {
+        this.user_id = user_id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.phone = phone;
+        this.avatar = avatar;
+        this.status = status;
+        this.address = address;
+        this.gender = gender;
+        this.major = major;
+        this.lastLogin = lastLogin;
     }
 
     public long getUser_id() {
@@ -105,5 +132,37 @@ public class User {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getMajor() {
+        return major;
+    }
+
+    public void setMajor(String major) {
+        this.major = major;
+    }
+
+    public String getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(String lastLogin) {
+        this.lastLogin = lastLogin;
     }
 }

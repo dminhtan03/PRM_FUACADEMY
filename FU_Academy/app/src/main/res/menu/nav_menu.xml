@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@android:drawable/ic_menu_view"
+            android:title="Trang chủ" />
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@android:drawable/ic_menu_myplaces"
+            android:title="Xem hồ sơ" />
+
+        <item
+            android:id="@+id/nav_edit_profile"
+            android:icon="@android:drawable/ic_menu_edit"
+            android:title="Chỉnh sửa hồ sơ" />
+
+        <item
+            android:id="@+id/nav_change_password"
+            android:icon="@android:drawable/ic_lock_lock"
+            android:title="Đổi mật khẩu" />
+
+        <item
+            android:id="@+id/nav_courses"
+            android:icon="@android:drawable/ic_menu_view"
+            android:title="Xem khóa học" />
+    </group>
+
+    <item android:title="Khác">
+        <menu>
+            <item
+                android:id="@+id/nav_logout"
+                android:icon="@android:drawable/ic_menu_close_clear_cancel"
+                android:title="Đăng xuất" />
+        </menu>
+    </item>
+
+</menu>
+
