@@ -3,7 +3,9 @@ package com.example.fu_academy.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
+
 import androidx.activity.ComponentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -16,12 +18,17 @@ public class StudentDashboardActivity extends ComponentActivity {
     private TextView tvGPA, tvTotalCredits, tvSemester, tvNotificationCount;
     private TextView tvUpcomingClass, tvAttendanceRate, tvRank, tvFeedbackCount;
 
+    private Button btnWeeklySchedule, btnMonthlyCalendar, btnExamSchedule,
+            btnAttendanceDetail, btnAcademicSummary, btnFeedbackForm;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_dashboard);
 
         initViews();
+        initButtons();
+
         viewModel = new ViewModelProvider(this).get(StudentDashboardViewModel.class);
 
         // Get student ID from SharedPreferences or Intent
@@ -33,6 +40,9 @@ public class StudentDashboardActivity extends ComponentActivity {
 
         // Observe LiveData
         observeData();
+
+        // Set button click listeners
+        setupButtonListeners();
     }
 
     private void initViews() {
@@ -44,6 +54,24 @@ public class StudentDashboardActivity extends ComponentActivity {
         tvAttendanceRate = findViewById(R.id.tvAttendanceRate);
         tvRank = findViewById(R.id.tvRank);
         tvFeedbackCount = findViewById(R.id.tvFeedbackCount);
+    }
+
+    private void initButtons() {
+        btnWeeklySchedule = findViewById(R.id.btnWeeklySchedule);
+        btnMonthlyCalendar = findViewById(R.id.btnMonthlyCalendar);
+        btnExamSchedule = findViewById(R.id.btnExamSchedule);
+        btnAttendanceDetail = findViewById(R.id.btnAttendanceDetail);
+        btnAcademicSummary = findViewById(R.id.btnAcademicSummary);
+        btnFeedbackForm = findViewById(R.id.btnFeedbackForm);
+    }
+
+    private void setupButtonListeners() {
+        btnWeeklySchedule.setOnClickListener(v -> startActivity(new Intent(this, WeeklyScheduleActivity.class)));
+        btnMonthlyCalendar.setOnClickListener(v -> startActivity(new Intent(this, MonthlyCalendarActivity.class)));
+        btnExamSchedule.setOnClickListener(v -> startActivity(new Intent(this, ExamScheduleActivity.class)));
+        btnAttendanceDetail.setOnClickListener(v -> startActivity(new Intent(this, AttendanceDetailActivity.class)));
+        btnAcademicSummary.setOnClickListener(v -> startActivity(new Intent(this, AcademicSummaryActivity.class)));
+        btnFeedbackForm.setOnClickListener(v -> startActivity(new Intent(this, FeedbackFormActivity.class)));
     }
 
     private void observeData() {
@@ -99,5 +127,3 @@ public class StudentDashboardActivity extends ComponentActivity {
         });
     }
 }
-
-
