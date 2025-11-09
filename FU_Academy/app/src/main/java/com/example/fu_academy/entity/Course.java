@@ -31,6 +31,12 @@ public class Course {
     @ColumnInfo(name = "status")
     public String status;
 
+    @ColumnInfo(name = "course_code")
+    public String course_code;
+
+    @ColumnInfo(name = "type")
+    public String type; // "Bắt buộc" or "Tự chọn"
+
     public Course() {
     }
 
@@ -41,6 +47,17 @@ public class Course {
         this.credit = credit;
         this.semester = semester;
         this.status = status;
+    }
+
+    public Course(long course_id, String name, long lecturer_id, int credit, String semester, String status, String course_code, String type) {
+        this.course_id = course_id;
+        this.name = name;
+        this.lecturer_id = lecturer_id;
+        this.credit = credit;
+        this.semester = semester;
+        this.status = status;
+        this.course_code = course_code;
+        this.type = type;
     }
 
     public long getCourse_id() {
@@ -89,5 +106,21 @@ public class Course {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getCourse_code() {
+        return course_code;
+    }
+
+    public void setCourse_code(String course_code) {
+        this.course_code = course_code;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

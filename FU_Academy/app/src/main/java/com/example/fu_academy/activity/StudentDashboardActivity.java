@@ -68,7 +68,12 @@ public class StudentDashboardActivity extends ComponentActivity {
                 "Exam Schedule",
                 "Attendance Detail",
                 "Academic Summary",
-                "Feedback Form"
+                "Feedback Form",
+                "Curriculum",
+                "Grade per Semester",
+                "Assignment List",
+                "Material List",
+                "Submission List"
         };
 
         // Gán ArrayAdapter
@@ -107,6 +112,25 @@ public class StudentDashboardActivity extends ComponentActivity {
                         break;
                     case "Feedback Form":
                         startActivity(new Intent(StudentDashboardActivity.this, FeedbackFormActivity.class));
+                        break;
+                    case "Curriculum":
+                        startActivity(new Intent(StudentDashboardActivity.this, CourseListActivity.class));
+                        break;
+                    case "Grade per Semester":
+                        startActivity(new Intent(StudentDashboardActivity.this, GradePerSemesterActivity.class));
+                        break;
+                    case "Assignment List":
+                        Intent assignmentIntent = new Intent(StudentDashboardActivity.this, AssignmentListActivity.class);
+                        assignmentIntent.putExtra("course_id", -1);
+                        startActivity(assignmentIntent);
+                        break;
+                    case "Material List":
+                        Intent materialIntent = new Intent(StudentDashboardActivity.this, MaterialListActivity.class);
+                        materialIntent.putExtra("course_id", -1);
+                        startActivity(materialIntent);
+                        break;
+                    case "Submission List":
+                        startActivity(new Intent(StudentDashboardActivity.this, SubmissionListActivity.class));
                         break;
                 }
 

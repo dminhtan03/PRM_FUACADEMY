@@ -36,6 +36,12 @@
         <activity android:name=".activity.ManageRoleActivity" />
         <activity android:name=".activity.ProfileOverviewActivity" />
         <activity android:name=".activity.EditProfileActivity" />
+        <activity android:name=".activity.GradePerSemesterActivity" />
+        <activity android:name=".activity.AssignmentListActivity" />
+        <activity android:name=".activity.AssignmentDetailActivity" />
+        <activity android:name=".activity.MaterialListActivity" />
+        <activity android:name=".activity.MaterialDetailActivity" />
+        <activity android:name=".activity.SubmissionListActivity" />
     </application>
 
 </manifest>

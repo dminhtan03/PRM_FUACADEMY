@@ -32,6 +32,21 @@ public class Submission {
     @ColumnInfo(name = "grade")
     public Double grade;
 
+    @ColumnInfo(name = "submit_date")
+    public String submit_date;
+
+    @ColumnInfo(name = "file_name")
+    public String file_name;
+
+    @ColumnInfo(name = "file_size")
+    public String file_size;
+
+    @ColumnInfo(name = "status")
+    public String status; // "On-time" or "Late"
+
+    @ColumnInfo(name = "feedback")
+    public String feedback;
+
     public Submission() {
     }
 
@@ -81,5 +96,45 @@ public class Submission {
 
     public void setGrade(Double grade) {
         this.grade = grade;
+    }
+
+    public String getSubmit_date() {
+        return submit_date;
+    }
+
+    public void setSubmit_date(String submit_date) {
+        this.submit_date = submit_date;
+    }
+
+    public String getFile_name() {
+        return file_name;
+    }
+
+    public void setFile_name(String file_name) {
+        this.file_name = file_name;
+    }
+
+    public String getFile_size() {
+        return file_size;
+    }
+
+    public void setFile_size(String file_size) {
+        this.file_size = file_size;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
     }
 }

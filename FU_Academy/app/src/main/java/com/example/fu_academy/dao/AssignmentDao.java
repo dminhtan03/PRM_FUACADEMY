@@ -16,4 +16,7 @@ public interface AssignmentDao {
 
     @Query("SELECT * FROM Assignment WHERE assignment_id = :id")
     Assignment findById(long id);
+
+    @Update
+    void update(Assignment assignment);
 }

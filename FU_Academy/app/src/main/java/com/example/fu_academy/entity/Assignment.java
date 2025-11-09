@@ -28,6 +28,24 @@ public class Assignment {
     @ColumnInfo(name = "description")
     public String description;
 
+    @ColumnInfo(name = "status")
+    public String status; // "Chưa nộp", "Đã nộp", "Quá hạn"
+
+    @ColumnInfo(name = "grade")
+    public Double grade;
+
+    @ColumnInfo(name = "type")
+    public String type; // "Bài tập", "Dự án", etc.
+
+    @ColumnInfo(name = "file_required")
+    public boolean file_required;
+
+    @ColumnInfo(name = "max_score")
+    public Double max_score;
+
+    @ColumnInfo(name = "feedback")
+    public String feedback;
+
     public Assignment() {
     }
 
@@ -77,5 +95,53 @@ public class Assignment {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Double getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Double grade) {
+        this.grade = grade;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public boolean isFile_required() {
+        return file_required;
+    }
+
+    public void setFile_required(boolean file_required) {
+        this.file_required = file_required;
+    }
+
+    public Double getMax_score() {
+        return max_score;
+    }
+
+    public void setMax_score(Double max_score) {
+        this.max_score = max_score;
+    }
+
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
     }
 }

@@ -28,6 +28,18 @@ public class Material {
     @ColumnInfo(name = "upload_date")
     public String upload_date;
 
+    @ColumnInfo(name = "type")
+    public String type; // "PDF", "Video", "Document", etc.
+
+    @ColumnInfo(name = "file_size")
+    public String file_size;
+
+    @ColumnInfo(name = "owner_id")
+    public long owner_id;
+
+    @ColumnInfo(name = "description")
+    public String description;
+
     public Material() {
     }
 
@@ -77,5 +89,37 @@ public class Material {
 
     public void setUpload_date(String upload_date) {
         this.upload_date = upload_date;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getFile_size() {
+        return file_size;
+    }
+
+    public void setFile_size(String file_size) {
+        this.file_size = file_size;
+    }
+
+    public long getOwner_id() {
+        return owner_id;
+    }
+
+    public void setOwner_id(long owner_id) {
+        this.owner_id = owner_id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
