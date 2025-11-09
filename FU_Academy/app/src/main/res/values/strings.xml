@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">FU_Academy</string>
-    
+
     <array name="feedback_categories">
         <item>course</item>
         <item>lecturer</item>
         <item>system</item>
     </array>
+    <string name="navigation_drawer_open">Mở menu</string>
+    <string name="navigation_drawer_close">Đóng menu</string>
 </resources>

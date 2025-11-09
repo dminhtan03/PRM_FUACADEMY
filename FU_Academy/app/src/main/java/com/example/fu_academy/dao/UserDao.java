@@ -29,4 +29,19 @@ public interface UserDao {
 
     @Query("SELECT * FROM User WHERE email = :email AND password = :password LIMIT 1")
     User login(String email, String password);
+
+    @Query("SELECT * FROM User WHERE email = :email LIMIT 1")
+    User getUserByEmail(String email);
+
+    @Query("SELECT * FROM User WHERE email = :email AND password = :password AND role = :role LIMIT 1")
+    User loginWithRole(String email, String password, String role);
+
+    @Query("UPDATE User SET password = :newPassword WHERE email = :email")
+    void updatePassword(String email, String newPassword);
+
+    @Query("UPDATE User SET lastLogin = :lastLogin WHERE user_id = :userId")
+    void updateLastLogin(long userId, String lastLogin);
+
+    @Query("SELECT * FROM User WHERE role LIKE :roleFilter AND email LIKE :emailFilter AND status LIKE :statusFilter")
+    List<User> getUsersWithFilter(String roleFilter, String emailFilter, String statusFilter);
 }

@@ -20,6 +20,7 @@ import com.example.fu_academy.dao.NotificationDao;
 import com.example.fu_academy.dao.ScheduleDao;
 import com.example.fu_academy.dao.SubmissionDao;
 import com.example.fu_academy.dao.UserDao;
+import com.example.fu_academy.dao.OTPDao;
 import com.example.fu_academy.entity.Assignment;
 import com.example.fu_academy.entity.AttendanceDetail;
 import com.example.fu_academy.entity.Class;
@@ -32,13 +33,15 @@ import com.example.fu_academy.entity.Notification;
 import com.example.fu_academy.entity.Schedule;
 import com.example.fu_academy.entity.Submission;
 import com.example.fu_academy.entity.User;
+import com.example.fu_academy.entity.OTP;
 
 @Database(
         entities = {
                 User.class, Course.class, Class.class, Enrollment.class,
                 Material.class, Assignment.class, Submission.class,
                 Notification.class, Feedback.class, Schedule.class,
-                Exam.class, AttendanceDetail.class
+                Exam.class, AttendanceDetail.class,
+                Notification.class, Feedback.class, Schedule.class, OTP.class
         },
         version = 3,
         exportSchema = false
@@ -60,6 +63,7 @@ public abstract class EducationDatabase extends RoomDatabase {
         public abstract ScheduleDao scheduleDao();
         public abstract ExamDao examDao();
         public abstract AttendanceDetailDao attendanceDetailDao();
+        public abstract OTPDao otpDao();
 
         // --- Singleton Builder ---
         public static EducationDatabase getInstance(Context context) {
@@ -71,6 +75,8 @@ public abstract class EducationDatabase extends RoomDatabase {
                                                 .fallbackToDestructiveMigration()
                                                 .allowMainThreadQueries() // chỉ dùng demo, nên chuyển sang background sau
                                                 .build();
+                                        // Initialize sample data
+                                        com.example.fu_academy.helper.DatabaseInitializer.initializeData(context);
                                 }
                         }
                 }

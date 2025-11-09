@@ -28,6 +28,13 @@
         <activity android:name=".activity.AcademicSummaryActivity" />
         <activity android:name=".activity.FeedbackFormActivity" />
         <activity android:name=".activity.CourseListActivity" />
+        <activity android:name=".activity.HomeActivity" />
+        <activity android:name=".activity.ForgotPasswordActivity" />
+        <activity android:name=".activity.VerifyOTPActivity" />
+        <activity android:name=".activity.ChangePasswordActivity" />
+        <activity android:name=".activity.ManageRoleActivity" />
+        <activity android:name=".activity.ProfileOverviewActivity" />
+        <activity android:name=".activity.EditProfileActivity" />
     </application>
 
 </manifest>
