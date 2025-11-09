@@ -51,9 +51,7 @@ public class LoginActivity extends ComponentActivity {
         prefsHelper = new SharedPreferencesHelper(this);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
         
-        // Initialize database with sample accounts from helper/DatabaseInitializer
-        // This will be called automatically when EducationDatabase.getInstance() is first called
-        // But we ensure it's initialized here
+        // Initialize database (will auto-create sample accounts)
         com.example.fu_academy.database.EducationDatabase.getInstance(this);
 
         // Load saved credentials if RememberMe was checked
@@ -66,20 +64,15 @@ public class LoginActivity extends ComponentActivity {
         // Observe login result
         userViewModel.loggedUser.observe(this, user -> {
             if (user != null) {
-                // Save user info to SharedPreferences
+                // Save user info to SharedPreferences for CourseListActivity
                 SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putLong("user_id", user.user_id);
-                // Only save student_id if the user is a student
                 if ("student".equalsIgnoreCase(user.role)) {
                     editor.putLong("student_id", user.user_id);
                 } else {
-                    // For lecturers, we might want to keep the previous student_id or clear it
-                    // For now, we'll keep it as -1 to indicate not a student
                     editor.putLong("student_id", -1);
                 }
-                editor.putString("user_name", user.name);
-                editor.putString("user_role", user.role);
                 editor.apply();
 
                 prefsHelper.saveLoginInfo(edtEmail.getText().toString().trim(),
