@@ -63,12 +63,12 @@ public class StudentDashboardActivity extends ComponentActivity {
         // Danh sách menu
         String[] menuItems = {
                 "DashBoard",
-                "Weekly Schedule",
-                "Monthly Calendar",
-                "Exam Schedule",
-                "Attendance Detail",
-                "Academic Summary",
-                "Feedback Form"
+                "Lịch học theo tuần",
+                "Lịch học theo tháng",
+                "Lịch thi",
+                "Báo cáo điểm danh",
+                "Báo cáo điểm",
+                "Ý kiến đánh giá"
         };
 
         // Gán ArrayAdapter

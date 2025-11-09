@@ -32,14 +32,35 @@ public class DatabaseInitializer {
         EducationDatabase db = EducationDatabase.getInstance(context);
         UserDao userDao = db.userDao();
 
+        // Migration: Cập nhật email cũ thành email mới nếu user đã tồn tại với email cũ
+        User oldStudent1 = userDao.getUserByEmail("student1@fu.edu.vn");
+        if (oldStudent1 != null) {
+            // Kiểm tra xem email mới đã tồn tại chưa
+            User newStudent1 = userDao.getUserByEmail("sonmthe170091@fu.edu.vn");
+            if (newStudent1 == null) {
+                // Cập nhật email cũ thành email mới
+                oldStudent1.email = "sonmthe170091@fu.edu.vn";
+                oldStudent1.name = "Mạc Tuấn Sơn";
+                userDao.updateUser(oldStudent1);
+                android.util.Log.d("DatabaseInitializer", "Updated email from student1@fu.edu.vn to sonmthe170091@fu.edu.vn");
+            }
+        }
+
         // Kiểm tra xem đã có dữ liệu chưa (kiểm tra số lượng users và enrollments)
         List<User> existingUsers = userDao.getAllUsers();
-        List<Enrollment> existingEnrollments = db.enrollmentDao().getByStudent(1); // Kiểm tra với student_id = 1
         
-        // Nếu đã có users và enrollments, không cần khởi tạo lại
+        // Tìm student với email mới để kiểm tra enrollments
+        User existingStudent1 = userDao.getUserByEmail("sonmthe170091@fu.edu.vn");
+        List<Enrollment> existingEnrollments = null;
+        if (existingStudent1 != null) {
+            existingEnrollments = db.enrollmentDao().getByStudent(existingStudent1.user_id);
+        }
+        
+        // Nếu đã có users và enrollments, đảm bảo schedules được cập nhật cho tuần hiện tại
         if (existingUsers != null && existingUsers.size() > 0 
             && existingEnrollments != null && existingEnrollments.size() > 0) {
-            // Đã có dữ liệu đầy đủ, không cần khởi tạo lại
+            // Đã có dữ liệu đầy đủ, nhưng vẫn cần đảm bảo schedules cho tuần hiện tại
+            ensureSchedulesForCurrentWeek(db);
             if (!isInitialized) {
                 prefs.edit().putBoolean(KEY_DATA_INITIALIZED, true).apply();
             }
@@ -52,7 +73,7 @@ public class DatabaseInitializer {
             && (existingEnrollments == null || existingEnrollments.size() == 0)) {
             android.util.Log.d("DatabaseInitializer", "Users exist but no enrollments found. Creating enrollments...");
             // Tìm lại các users đã có
-            User insertedStudent1 = userDao.getUserByEmail("student1@fu.edu.vn");
+            User insertedStudent1 = userDao.getUserByEmail("sonmthe170091@fu.edu.vn");
             User insertedStudent2 = userDao.getUserByEmail("student2@fu.edu.vn");
             User insertedStudent3 = userDao.getUserByEmail("student3@fu.edu.vn");
             User insertedLecturer1 = userDao.getUserByEmail("lecturer1@fu.edu.vn");
@@ -78,10 +99,8 @@ public class DatabaseInitializer {
                 insertSampleEnrollmentsForStudent(db, insertedStudent3.user_id, 2);
                 
                 // Tạo schedules, exams, attendance, notifications, feedback
-                List<Schedule> existingSchedules = db.scheduleDao().getAll();
-                if (existingSchedules == null || existingSchedules.isEmpty()) {
-                    insertSampleSchedules(db);
-                }
+                // Đảm bảo schedules luôn được tạo cho tuần hiện tại
+                ensureSchedulesForCurrentWeek(db);
                 
                 List<Exam> existingExams = db.examDao().getAll();
                 if (existingExams == null || existingExams.isEmpty()) {
@@ -110,8 +129,8 @@ public class DatabaseInitializer {
         if (!isInitialized) {
             // Tạo tài khoản mẫu cho Student
             User student1 = new User();
-            student1.name = "Nguyễn Văn An";
-            student1.email = "student1@fu.edu.vn";
+            student1.name = "Mạc Tuấn Sơn";
+            student1.email = "sonmthe170091@fu.edu.vn";
             student1.password = "123456";
             student1.role = "student";
             student1.phone = "0901234567";
@@ -171,7 +190,7 @@ public class DatabaseInitializer {
             userDao.insertUser(lecturer2);
 
             // Lấy user_id sau khi insert (vì autoGenerate)
-            User insertedStudent1 = userDao.getUserByEmail("student1@fu.edu.vn");
+            User insertedStudent1 = userDao.getUserByEmail("sonmthe170091@fu.edu.vn");
             User insertedStudent2 = userDao.getUserByEmail("student2@fu.edu.vn");
             User insertedStudent3 = userDao.getUserByEmail("student3@fu.edu.vn");
             User insertedLecturer1 = userDao.getUserByEmail("lecturer1@fu.edu.vn");
@@ -188,7 +207,7 @@ public class DatabaseInitializer {
                 insertSampleEnrollmentsForStudent(db, insertedStudent2.user_id, 1); // Student2: lớp 1, 2
                 insertSampleEnrollmentsForStudent(db, insertedStudent3.user_id, 2); // Student3: lớp 2, 3
                 
-                insertSampleSchedules(db);
+                ensureSchedulesForCurrentWeek(db);
                 insertSampleExams(db);
                 
                 // Tạo attendance riêng cho từng student
@@ -365,6 +384,104 @@ public class DatabaseInitializer {
             enrollment.grade = grades[i];
             enrollment.attendance = attendances[i];
             db.enrollmentDao().insert(enrollment);
+        }
+    }
+
+    // Đảm bảo schedules luôn được tạo cho tháng hiện tại (đồng bộ với Monthly Calendar)
+    public static void ensureSchedulesForCurrentWeek(EducationDatabase db) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        
+        String currentMonth = monthFormat.format(cal.getTime());
+        
+        // Kiểm tra xem đã có schedules cho tháng hiện tại chưa
+        List<Schedule> allSchedules = db.scheduleDao().getAll();
+        boolean hasCurrentMonthSchedules = false;
+        if (allSchedules != null && !allSchedules.isEmpty()) {
+            for (Schedule s : allSchedules) {
+                if (s.date != null && s.date.startsWith(currentMonth)) {
+                    hasCurrentMonthSchedules = true;
+                    break;
+                }
+            }
+        }
+        
+        // Nếu chưa có schedules cho tháng hiện tại, tạo mới cho toàn bộ tháng
+        if (!hasCurrentMonthSchedules) {
+            insertSampleSchedulesForMonth(db, currentMonth);
+        }
+    }
+
+    // Khởi tạo dữ liệu mẫu cho schedules - tạo cho toàn bộ tháng (đồng bộ với Monthly Calendar)
+    private static void insertSampleSchedulesForMonth(EducationDatabase db, String month) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        List<Class> classes = db.classDao().getAll();
+        
+        if (classes == null || classes.isEmpty()) return;
+
+        try {
+            // Parse tháng (yyyy-MM) để lấy năm và tháng
+            String[] parts = month.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int monthInt = Integer.parseInt(parts[1]) - 1; // Calendar.MONTH is 0-based
+            
+            // Tạo schedules cho các ngày trong tháng (tương tự như Monthly Calendar hiển thị)
+            // Ngày 3 - Lớp 1 (Lecture)
+            cal.set(year, monthInt, 3);
+            Schedule schedule1 = new Schedule();
+            schedule1.class_id = classes.get(0).class_id;
+            schedule1.date = sdf.format(cal.getTime());
+            schedule1.time = "07:00-09:00";
+            schedule1.room = "A101";
+            schedule1.type = "lecture";
+            schedule1.status = "scheduled";
+            db.scheduleDao().insert(schedule1);
+
+            // Ngày 4 - Lớp 1 (Lab)
+            cal.set(year, monthInt, 4);
+            Schedule schedule4 = new Schedule();
+            schedule4.class_id = classes.get(0).class_id;
+            schedule4.date = sdf.format(cal.getTime());
+            schedule4.time = "14:00-16:00";
+            schedule4.room = "A101";
+            schedule4.type = "lab";
+            schedule4.status = "scheduled";
+            db.scheduleDao().insert(schedule4);
+
+            // Ngày 6 - Lớp 2 (Lecture)
+            if (classes.size() > 1) {
+                cal.set(year, monthInt, 6);
+                Schedule schedule2 = new Schedule();
+                schedule2.class_id = classes.get(1).class_id;
+                schedule2.date = sdf.format(cal.getTime());
+                schedule2.time = "09:00-11:00";
+                schedule2.room = "B202";
+                schedule2.type = "lecture";
+                schedule2.status = "scheduled";
+                db.scheduleDao().insert(schedule2);
+            }
+
+            // Ngày 8 - Lớp 3 (Lab)
+            if (classes.size() > 2) {
+                cal.set(year, monthInt, 8);
+                Schedule schedule3 = new Schedule();
+                schedule3.class_id = classes.get(2).class_id;
+                schedule3.date = sdf.format(cal.getTime());
+                schedule3.time = "13:00-15:00";
+                schedule3.room = "C303";
+                schedule3.type = "lab";
+                schedule3.status = "scheduled";
+                db.scheduleDao().insert(schedule3);
+            }
+
+            // Thêm schedules cho tuần hiện tại (để đảm bảo có dữ liệu cho Weekly Schedule)
+            insertSampleSchedules(db);
+        } catch (Exception e) {
+            android.util.Log.e("DatabaseInitializer", "Error creating schedules for month: " + month, e);
+            // Fallback: tạo schedules cho tuần hiện tại
+            insertSampleSchedules(db);
         }
     }
 
