@@ -62,18 +62,18 @@ public class StudentDashboardActivity extends ComponentActivity {
     private void setupSpinnerMenu() {
         // Danh sách menu
         String[] menuItems = {
-                "DashBoard",
-                "Weekly Schedule",
-                "Monthly Calendar",
-                "Exam Schedule",
-                "Attendance Detail",
-                "Academic Summary",
-                "Feedback Form",
-                "Curriculum",
-                "Grade per Semester",
-                "Assignment List",
-                "Material List",
-                "Submission List"
+                "Bảng điều khiển",
+                "Lịch học theo tuần",
+                "Lịch học theo tháng",
+                "Lịch thi",
+                "Báo cáo điểm danh",
+                "Tổng kết học tập",
+                "Ý kiến đánh giá",
+                "Khung chương trình",
+                "Điểm theo kỳ",
+                "Danh sách bài tập",
+                "Tài liệu môn học",
+                "Bài tập đã nộp"
         };
 
         // Gán ArrayAdapter
@@ -95,41 +95,41 @@ public class StudentDashboardActivity extends ComponentActivity {
                 String selected = parent.getItemAtPosition(position).toString();
 
                 switch (selected) {
-                    case "Weekly Schedule":
+                    case "Lịch học theo tuần":
                         startActivity(new Intent(StudentDashboardActivity.this, WeeklyScheduleActivity.class));
                         break;
-                    case "Monthly Calendar":
+                    case "Lịch học theo tháng":
                         startActivity(new Intent(StudentDashboardActivity.this, MonthlyCalendarActivity.class));
                         break;
-                    case "Exam Schedule":
+                    case "Lịch thi":
                         startActivity(new Intent(StudentDashboardActivity.this, ExamScheduleActivity.class));
                         break;
-                    case "Attendance Detail":
+                    case "Báo cáo điểm danh":
                         startActivity(new Intent(StudentDashboardActivity.this, AttendanceDetailActivity.class));
                         break;
-                    case "Academic Summary":
+                    case "Tổng kết học tập":
                         startActivity(new Intent(StudentDashboardActivity.this, AcademicSummaryActivity.class));
                         break;
-                    case "Feedback Form":
+                    case "Ý kiến đánh giá":
                         startActivity(new Intent(StudentDashboardActivity.this, FeedbackFormActivity.class));
                         break;
-                    case "Curriculum":
+                    case "Khung chương trình":
                         startActivity(new Intent(StudentDashboardActivity.this, CourseListActivity.class));
                         break;
-                    case "Grade per Semester":
+                    case "Điểm theo kỳ":
                         startActivity(new Intent(StudentDashboardActivity.this, GradePerSemesterActivity.class));
                         break;
-                    case "Assignment List":
+                    case "Danh sách bài tập":
                         Intent assignmentIntent = new Intent(StudentDashboardActivity.this, AssignmentListActivity.class);
                         assignmentIntent.putExtra("course_id", -1);
                         startActivity(assignmentIntent);
                         break;
-                    case "Material List":
+                    case "Tài liệu môn học":
                         Intent materialIntent = new Intent(StudentDashboardActivity.this, MaterialListActivity.class);
                         materialIntent.putExtra("course_id", -1);
                         startActivity(materialIntent);
                         break;
-                    case "Submission List":
+                    case "Bài tập đã nộp":
                         startActivity(new Intent(StudentDashboardActivity.this, SubmissionListActivity.class));
                         break;
                 }

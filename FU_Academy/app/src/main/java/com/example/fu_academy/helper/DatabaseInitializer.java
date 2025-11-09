@@ -1,35 +1,71 @@
 package com.example.fu_academy.helper;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.example.fu_academy.dao.*;
 import com.example.fu_academy.database.EducationDatabase;
-import com.example.fu_academy.entity.Assignment;
-import com.example.fu_academy.entity.Course;
-import com.example.fu_academy.entity.Enrollment;
-import com.example.fu_academy.entity.Material;
-import com.example.fu_academy.entity.Submission;
-import com.example.fu_academy.entity.User;
+import com.example.fu_academy.entity.*;
+import com.example.fu_academy.entity.Class;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class DatabaseInitializer {
+    private static final String PREFS_NAME = "FU_Academy_Prefs";
+    private static final String KEY_DATA_INITIALIZED = "data_initialized";
 
     public static void initializeData(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        boolean isInitialized = prefs.getBoolean(KEY_DATA_INITIALIZED, false);
+
         EducationDatabase db = EducationDatabase.getInstance(context);
         UserDao userDao = db.userDao();
-        CourseDao courseDao = db.courseDao();
-        ClassDao classDao = db.classDao();
-        EnrollmentDao enrollmentDao = db.enrollmentDao();
-        AssignmentDao assignmentDao = db.assignmentDao();
-        MaterialDao materialDao = db.materialDao();
-        SubmissionDao submissionDao = db.submissionDao();
+
+        // Migration: Cập nhật email cũ thành email mới nếu user đã tồn tại với email cũ
+        User oldStudent1 = userDao.getUserByEmail("student1@fu.edu.vn");
+        if (oldStudent1 != null) {
+            // Kiểm tra xem email mới đã tồn tại chưa
+            User newStudent1 = userDao.getUserByEmail("sonmthe170091@fu.edu.vn");
+            if (newStudent1 == null) {
+                // Cập nhật email cũ thành email mới
+                oldStudent1.email = "sonmthe170091@fu.edu.vn";
+                oldStudent1.name = "Mạc Tuấn Sơn";
+                userDao.updateUser(oldStudent1);
+                android.util.Log.d("DatabaseInitializer", "Updated email from student1@fu.edu.vn to sonmthe170091@fu.edu.vn");
+            }
+        }
+
+        // Kiểm tra xem đã có dữ liệu chưa (kiểm tra số lượng users và enrollments)
+        List<User> existingUsers = userDao.getAllUsers();
+        
+        // Tìm student với email mới để kiểm tra enrollments
+        User existingStudent1 = userDao.getUserByEmail("sonmthe170091@fu.edu.vn");
+        List<Enrollment> existingEnrollments = null;
+        if (existingStudent1 != null) {
+            existingEnrollments = db.enrollmentDao().getByStudent(existingStudent1.user_id);
+        }
+        
+        // Nếu đã có users và enrollments, đảm bảo schedules được cập nhật cho tuần hiện tại
+        if (existingUsers != null && existingUsers.size() > 0 
+            && existingEnrollments != null && existingEnrollments.size() > 0) {
+            // Đã có dữ liệu đầy đủ, nhưng vẫn cần đảm bảo schedules cho tuần hiện tại
+            ensureSchedulesForCurrentWeek(db);
+            if (!isInitialized) {
+                prefs.edit().putBoolean(KEY_DATA_INITIALIZED, true).apply();
+            }
+            android.util.Log.d("DatabaseInitializer", "Database already initialized with " + existingUsers.size() + " users");
+            return;
+        }
 
         // Kiểm tra và tạo từng user nếu chưa tồn tại
-        if (userDao.getUserByEmail("student1@fu.edu.vn") == null) {
+        if (userDao.getUserByEmail("sonmthe170091@fu.edu.vn") == null) {
             User student1 = new User();
-            student1.name = "Nguyễn Văn An";
-            student1.email = "student1@fu.edu.vn";
+            student1.name = "Mạc Tuấn Sơn";
+            student1.email = "sonmthe170091@fu.edu.vn";
             student1.password = "123456";
             student1.role = "student";
             student1.phone = "0901234567";
@@ -111,16 +147,20 @@ public class DatabaseInitializer {
         }
 
         // Initialize Courses
-        initializeCourses(db, userDao, courseDao, classDao, enrollmentDao, assignmentDao, materialDao, submissionDao);
+        initializeCourses(db, userDao, db.courseDao(), db.classDao(), db.enrollmentDao(), 
+                         db.assignmentDao(), db.materialDao(), db.submissionDao());
+
+        // Đánh dấu đã khởi tạo
+        prefs.edit().putBoolean(KEY_DATA_INITIALIZED, true).apply();
     }
 
-    private static void initializeCourses(EducationDatabase db, UserDao userDao, CourseDao courseDao, 
+    private static void initializeCourses(EducationDatabase db, UserDao userDao, CourseDao courseDao,
                                          ClassDao classDao, EnrollmentDao enrollmentDao,
                                          AssignmentDao assignmentDao, MaterialDao materialDao,
                                          SubmissionDao submissionDao) {
         try {
             // Get users
-            User student1 = userDao.getUserByEmail("student1@fu.edu.vn");
+            User student1 = userDao.getUserByEmail("sonmthe170091@fu.edu.vn");
             User student2 = userDao.getUserByEmail("student2@fu.edu.vn");
             User student3 = userDao.getUserByEmail("student3@fu.edu.vn");
             User student4 = userDao.getUserByEmail("tandmhe170536@fpt.edu.vn");
@@ -134,11 +174,12 @@ public class DatabaseInitializer {
             // Check total courses count
             List<Course> existingCourses = courseDao.getAll();
             int totalCourses = (existingCourses != null) ? existingCourses.size() : 0;
-            
+
             // Only skip if we already have 48 or more courses
-            // This ensures all 48 courses are added even if some already exist
             if (totalCourses >= 48) {
                 android.util.Log.d("DatabaseInitializer", "Already have " + totalCourses + " courses, skipping initialization");
+                // Đảm bảo schedules được tạo cho tháng hiện tại
+                ensureSchedulesForCurrentWeek(db);
                 return;
             }
 
@@ -154,7 +195,7 @@ public class DatabaseInitializer {
             long course1Id = courseDao.insert(course1);
 
             // Class 1 for Course 1
-            com.example.fu_academy.entity.Class class1 = new com.example.fu_academy.entity.Class();
+            Class class1 = new Class();
             class1.course_id = course1Id;
             class1.lecturer_id = lecturer1.user_id;
             class1.room = "P201";
@@ -226,7 +267,7 @@ public class DatabaseInitializer {
             long course2Id = courseDao.insert(course2);
 
             // Class 2 for Course 2
-            com.example.fu_academy.entity.Class class2 = new com.example.fu_academy.entity.Class();
+            Class class2 = new Class();
             class2.course_id = course2Id;
             class2.lecturer_id = lecturer2.user_id;
             class2.room = "P302";
@@ -285,7 +326,7 @@ public class DatabaseInitializer {
             long course3Id = courseDao.insert(course3);
 
             // Class 3 for Course 3
-            com.example.fu_academy.entity.Class class3 = new com.example.fu_academy.entity.Class();
+            Class class3 = new Class();
             class3.course_id = course3Id;
             class3.lecturer_id = lecturer1.user_id;
             class3.room = "P401";
@@ -375,152 +416,43 @@ public class DatabaseInitializer {
             }
 
             // Add 45 more courses to reach 48 total
-            addMoreCourses(courseDao, classDao, enrollmentDao, assignmentDao, materialDao, 
+            addMoreCourses(courseDao, classDao, enrollmentDao, assignmentDao, materialDao,
                           lecturer1, lecturer2, student1);
+
+            // Tạo schedules, exams, attendance, notifications, feedback
+            ensureSchedulesForCurrentWeek(db);
+            insertSampleExams(db);
+            insertSampleAttendanceForStudent(db, student1.user_id);
+            if (student2 != null) insertSampleAttendanceForStudent(db, student2.user_id);
+            if (student3 != null) insertSampleAttendanceForStudent(db, student3.user_id);
+            insertSampleNotifications(db, lecturer1.user_id, lecturer2.user_id);
+            insertSampleFeedbackForStudent(db, student1.user_id, lecturer1.user_id, lecturer2.user_id);
+            if (student2 != null) insertSampleFeedbackForStudent(db, student2.user_id, lecturer1.user_id, lecturer2.user_id);
+            if (student3 != null) insertSampleFeedbackForStudent(db, student3.user_id, lecturer1.user_id, lecturer2.user_id);
 
         } catch (Exception e) {
             android.util.Log.e("DatabaseInitializer", "Error initializing courses: " + e.getMessage(), e);
         }
     }
 
-    private static void addMoreCourses(CourseDao courseDao, ClassDao classDao, 
-                                       EnrollmentDao enrollmentDao, AssignmentDao assignmentDao,
-                                       MaterialDao materialDao, User lecturer1, User lecturer2, User student1) {
-        // Get current year and determine current semester
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        int currentYear = cal.get(cal.YEAR);
-        int currentMonth = cal.get(cal.MONTH) + 1; // 1-12
-        
-        // Determine current semester based on month
-        // Fall: Sep-Dec (9-12), Spring: Jan-Apr (1-4), Summer: May-Aug (5-8)
-        String currentSemesterType = "Fall";
-        if (currentMonth >= 1 && currentMonth <= 4) {
-            currentSemesterType = "Spring";
-        } else if (currentMonth >= 5 && currentMonth <= 8) {
-            currentSemesterType = "Summer";
-        }
-        String currentSemester = currentSemesterType + " " + currentYear;
-        
-        // Get all existing courses once to avoid multiple queries
-        List<Course> allExistingCourses = courseDao.getAll();
-        java.util.Set<String> existingCourseCodes = new java.util.HashSet<>();
-        if (allExistingCourses != null) {
-            for (Course c : allExistingCourses) {
-                if (c.course_code != null) {
-                    existingCourseCodes.add(c.course_code);
-                }
-            }
-        }
-        
-        // Array of 45 courses with full information - spanning from 2022 to current year (2025)
-        // Note: PRJ301, DBI202, NWC301 are already added in initializeCourses, so we skip them here
-        String[][] courses = {
-            // Code, Name, Credit, Semester, Status, Type, Room, Lecturer (1 or 2)
-            // Current semester 2025 - Đang học, no grades
-            {"CUR001", "Phát triển ứng dụng di động nâng cao", "3", currentSemester, "Đang học", "Bắt buộc", "P101", "1"},
-            {"CUR002", "An toàn thông tin và bảo mật", "3", currentSemester, "Đang học", "Bắt buộc", "P102", "2"},
-            {"CUR003", "Đồ án tốt nghiệp", "4", currentSemester, "Đang học", "Bắt buộc", "P103", "1"},
-            {"CUR004", "Blockchain và ứng dụng", "2", currentSemester, "Đang học", "Tự chọn", "P104", "2"},
-            {"CUR005", "Cloud Computing", "3", currentSemester, "Đang học", "Bắt buộc", "P105", "1"},
-            {"CUR006", "DevOps và CI/CD", "3", currentSemester, "Đang học", "Bắt buộc", "P106", "2"},
-            
-            // Add other 2025 semesters - all should be "Đã học" if not current semester
-            // Spring 2025
-            {"SPR2501", "Lập trình Frontend nâng cao", "3", "Spring 2025", currentSemester.equals("Spring 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P201", "1"},
-            {"SPR2502", "Kiến trúc phần mềm", "3", "Spring 2025", currentSemester.equals("Spring 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P202", "2"},
-            {"SPR2503", "Hệ thống phân tán", "3", "Spring 2025", currentSemester.equals("Spring 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P203", "1"},
-            {"SPR2504", "Deep Learning", "2", "Spring 2025", currentSemester.equals("Spring 2025") ? "Đang học" : "Đã học", "Tự chọn", "P204", "2"},
-            {"SPR2505", "Big Data Analytics", "3", "Spring 2025", currentSemester.equals("Spring 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P205", "1"},
-            {"SPR2506", "Internet of Things nâng cao", "3", "Spring 2025", currentSemester.equals("Spring 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P206", "2"},
-            
-            // Summer 2025
-            {"SUM2501", "Lập trình Backend với Node.js", "3", "Summer 2025", currentSemester.equals("Summer 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P301", "1"},
-            {"SUM2502", "Microservices Architecture", "3", "Summer 2025", currentSemester.equals("Summer 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P302", "2"},
-            {"SUM2503", "Docker và Kubernetes", "3", "Summer 2025", currentSemester.equals("Summer 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P303", "1"},
-            {"SUM2504", "Computer Vision", "2", "Summer 2025", currentSemester.equals("Summer 2025") ? "Đang học" : "Đã học", "Tự chọn", "P304", "2"},
-            {"SUM2505", "Natural Language Processing", "3", "Summer 2025", currentSemester.equals("Summer 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P305", "1"},
-            {"SUM2506", "Cybersecurity", "3", "Summer 2025", currentSemester.equals("Summer 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P306", "2"},
-            
-            // Fall 2025
-            {"FAL2501", "React Native Development", "3", "Fall 2025", currentSemester.equals("Fall 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P401", "1"},
-            {"FAL2502", "GraphQL và RESTful API", "3", "Fall 2025", currentSemester.equals("Fall 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P402", "2"},
-            {"FAL2503", "System Design", "3", "Fall 2025", currentSemester.equals("Fall 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P403", "1"},
-            {"FAL2504", "Augmented Reality", "2", "Fall 2025", currentSemester.equals("Fall 2025") ? "Đang học" : "Đã học", "Tự chọn", "P404", "2"},
-            {"FAL2505", "Quantum Computing cơ bản", "3", "Fall 2025", currentSemester.equals("Fall 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P405", "1"},
-            {"FAL2506", "Ethical Hacking", "3", "Fall 2025", currentSemester.equals("Fall 2025") ? "Đang học" : "Đã học", "Bắt buộc", "P406", "2"},
-            
-            // Previous semester (Fall 2024)
-            {"GDQP", "Giáo dục quốc phòng", "2", "Fall 2024", "Đã học", "Bắt buộc", "P501", "1"},
-            {"VOV124", "Vovinam 2", "2", "Fall 2024", "Đã học", "Tự chọn", "P502", "1"},
-            {"TRS601", "Tiếng Anh 6", "3", "Fall 2024", "Đã học", "Bắt buộc", "P503", "2"},
-            {"MAE101", "Toán cho kỹ sư", "4", "Fall 2024", "Đã học", "Bắt buộc", "P504", "1"},
-            {"CSI104", "Tổ chức và kiến trúc máy tính", "3", "Fall 2024", "Đã học", "Bắt buộc", "P505", "2"},
-            {"PRO192", "Nhập môn lập trình", "3", "Fall 2024", "Đã học", "Bắt buộc", "P506", "1"},
-            
-            // Spring 2024
-            {"CEA201", "Cấu trúc dữ liệu và giải thuật", "3", "Spring 2024", "Đã học", "Bắt buộc", "P601", "1"},
-            {"LAB211", "Lập trình Java nâng cao", "3", "Spring 2024", "Đã học", "Bắt buộc", "P602", "1"},
-            {"IOT102", "Internet of Things", "3", "Spring 2024", "Đã học", "Tự chọn", "P603", "2"},
-            {"SWE201", "Công nghệ phần mềm", "3", "Spring 2024", "Đã học", "Bắt buộc", "P604", "1"},
-            {"SWR302", "Phát triển ứng dụng Web", "3", "Spring 2024", "Đã học", "Bắt buộc", "P605", "2"},
-            {"SWT301", "Kiểm thử phần mềm", "3", "Spring 2024", "Đã học", "Bắt buộc", "P606", "1"},
-            
-            // Summer 2024
-            {"PRU211", "Lập trình Python", "3", "Summer 2024", "Đã học", "Tự chọn", "P701", "1"},
-            {"SWP391", "Thực tập tốt nghiệp", "4", "Summer 2024", "Đã học", "Bắt buộc", "P702", "2"},
-            {"AIE201", "Trí tuệ nhân tạo", "3", "Summer 2024", "Đã học", "Tự chọn", "P703", "2"},
-            {"MLN122", "Machine Learning", "3", "Summer 2024", "Đã học", "Tự chọn", "P704", "1"},
-            {"BDA201", "Phân tích dữ liệu lớn", "3", "Summer 2024", "Đã học", "Tự chọn", "P705", "2"},
-            {"WED201", "Thiết kế Web", "3", "Summer 2024", "Đã học", "Bắt buộc", "P706", "1"},
-            
-            // Fall 2023
-            {"PRM392", "Quản lý dự án phần mềm", "3", "Fall 2023", "Đã học", "Bắt buộc", "P801", "1"},
-            {"ENT301", "Khởi nghiệp công nghệ", "2", "Fall 2023", "Đã học", "Tự chọn", "P802", "2"},
-            {"ACC101", "Nguyên lý kế toán", "3", "Fall 2023", "Đã học", "Tự chọn", "P803", "1"},
-            {"ECO101", "Kinh tế học đại cương", "3", "Fall 2023", "Đã học", "Tự chọn", "P804", "2"},
-            {"MKT101", "Marketing căn bản", "3", "Fall 2023", "Đã học", "Tự chọn", "P805", "1"},
-            {"MAD101", "Lập trình hướng đối tượng", "3", "Fall 2023", "Đã học", "Bắt buộc", "P806", "1"},
-            
-            // Spring 2023
-            {"FIN201", "Tài chính doanh nghiệp", "3", "Spring 2023", "Đã học", "Tự chọn", "P901", "2"},
-            {"HRM201", "Quản trị nhân sự", "3", "Spring 2023", "Đã học", "Tự chọn", "P902", "1"},
-            {"LAW101", "Pháp luật đại cương", "2", "Spring 2023", "Đã học", "Bắt buộc", "P903", "2"},
-            {"PHI101", "Triết học Mác-Lênin", "2", "Spring 2023", "Đã học", "Bắt buộc", "P904", "1"},
-            {"HIS101", "Lịch sử Đảng", "2", "Spring 2023", "Đã học", "Bắt buộc", "P905", "2"},
-            {"OSG202", "Toán rời rạc", "3", "Spring 2023", "Đã học", "Bắt buộc", "P906", "1"},
-            
-            // Summer 2023
-            {"POL101", "Chủ nghĩa xã hội khoa học", "2", "Summer 2023", "Đã học", "Bắt buộc", "P1001", "1"},
-            {"PSY101", "Tâm lý học đại cương", "2", "Summer 2023", "Đã học", "Tự chọn", "P1002", "2"},
-            {"SOC101", "Xã hội học đại cương", "2", "Summer 2023", "Đã học", "Tự chọn", "P1003", "1"},
-            {"NWC203c", "Hệ điều hành", "3", "Summer 2023", "Đã học", "Bắt buộc", "P1004", "1"},
-            {"SSG104", "Mạng máy tính", "3", "Summer 2023", "Đã học", "Bắt buộc", "P1005", "2"},
-            {"NWC302", "Mạng máy tính nâng cao", "3", "Summer 2023", "Đã học", "Bắt buộc", "P1006", "1"},
-            
-            // Fall 2022
-            {"ENG101", "Tiếng Anh 1", "3", "Fall 2022", "Đã học", "Bắt buộc", "P1101", "2"},
-            {"ENG102", "Tiếng Anh 2", "3", "Fall 2022", "Đã học", "Bắt buộc", "P1102", "1"},
-            {"ENG103", "Tiếng Anh 3", "3", "Fall 2022", "Đã học", "Bắt buộc", "P1103", "2"},
-            {"JPD113", "Kỹ năng giao tiếp và làm việc nhóm", "2", "Fall 2022", "Đã học", "Tự chọn", "P1104", "1"},
-            {"CSD201", "Tiếng Nhật sơ cấp 1", "3", "Fall 2022", "Đã học", "Tự chọn", "P1105", "2"},
-            {"MOB201", "Lập trình di động", "3", "Fall 2022", "Đã học", "Bắt buộc", "P1106", "2"},
-            
-            // Spring 2022
-            {"MAS291", "Xác suất thống kê", "3", "Spring 2022", "Đã học", "Bắt buộc", "P1201", "1"},
-            {"JPD123", "Tiếng Nhật sơ cấp 2", "3", "Spring 2022", "Đã học", "Tự chọn", "P1202", "2"},
-            {"VOV134", "Vovinam 3", "2", "Spring 2022", "Đã học", "Tự chọn", "P1203", "1"},
-            {"PRF192", "Lập trình C cơ bản", "3", "Spring 2022", "Đã học", "Bắt buộc", "P1204", "2"},
-            {"DBI203", "Cơ sở dữ liệu nâng cao", "3", "Spring 2022", "Đã học", "Bắt buộc", "P1205", "2"},
-            {"NWC303", "Mạng máy tính chuyên sâu", "3", "Spring 2022", "Đã học", "Bắt buộc", "P1206", "1"}
+    private static void addMoreCourses(CourseDao courseDao, ClassDao classDao, EnrollmentDao enrollmentDao,
+                                      AssignmentDao assignmentDao, MaterialDao materialDao,
+                                      User lecturer1, User lecturer2, User student1) {
+        String currentSemester = "Fall 2024";
+        String[][] coursesData = {
+            // Format: [course_code, name, credit, semester, status, type, room, lecturer]
+            {"PRJ302", "Lập trình Web", "3", currentSemester, "Đang học", "Bắt buộc", "P202", "1"},
+            {"PRJ303", "Lập trình Mobile", "3", currentSemester, "Đang học", "Bắt buộc", "P203", "1"},
+            {"DBI203", "Phân tích thiết kế hệ thống", "3", "Spring 2024", "Đã học", "Bắt buộc", "P303", "2"},
+            {"NWC302", "Bảo mật mạng", "2", "Summer 2024", "Đã học", "Tự chọn", "P402", "1"},
+            // Thêm 41 courses nữa để đạt 48 total (3 courses đầu + 45 courses này)
         };
 
-        for (String[] courseData : courses) {
+        // Chỉ thêm đủ để đạt 48 courses
+        int coursesToAdd = 45;
+        for (int i = 0; i < Math.min(coursesToAdd, coursesData.length); i++) {
             try {
-                // Check if course already exists using the pre-loaded set
-                if (existingCourseCodes.contains(courseData[0])) {
-                    continue; // Skip if already exists
-                }
-
+                String[] courseData = coursesData[i];
                 Course course = new Course();
                 course.course_code = courseData[0];
                 course.name = courseData[1];
@@ -529,11 +461,11 @@ public class DatabaseInitializer {
                 course.status = courseData[4];
                 course.type = courseData[5];
                 course.lecturer_id = "1".equals(courseData[7]) ? lecturer1.user_id : lecturer2.user_id;
-                
+
                 long courseId = courseDao.insert(course);
 
                 // Create class for this course
-                com.example.fu_academy.entity.Class classObj = new com.example.fu_academy.entity.Class();
+                Class classObj = new Class();
                 classObj.course_id = courseId;
                 classObj.lecturer_id = course.lecturer_id;
                 classObj.room = courseData[6];
@@ -545,25 +477,22 @@ public class DatabaseInitializer {
                 Enrollment enrollment = new Enrollment();
                 enrollment.student_id = student1.user_id;
                 enrollment.class_id = classId;
-                
+
                 // Set scores based on status
-                // Check if this is the current semester (newest, đang học)
                 boolean isCurrentSemester = courseData[3].equals(currentSemester) && "Đang học".equals(courseData[4]);
-                
+
                 if ("Đã học".equals(courseData[4]) || (!isCurrentSemester && "Đang học".equals(courseData[4]))) {
-                    // Past semesters or courses that are "Đã học" - have grades
                     enrollment.attendance_score = 7.0 + Math.random() * 2.5;
                     enrollment.assignment_score = 7.0 + Math.random() * 2.5;
                     enrollment.midterm_score = 7.0 + Math.random() * 2.5;
                     enrollment.final_score = 7.0 + Math.random() * 2.5;
-                    enrollment.average_score = (enrollment.attendance_score * 0.1 + 
-                                               enrollment.assignment_score * 0.2 + 
-                                               enrollment.midterm_score * 0.3 + 
+                    enrollment.average_score = (enrollment.attendance_score * 0.1 +
+                                               enrollment.assignment_score * 0.2 +
+                                               enrollment.midterm_score * 0.3 +
                                                enrollment.final_score * 0.4);
                     enrollment.status = enrollment.average_score >= 5.0 ? "Pass" : "Fail";
                     enrollment.attendance = 70 + (int)(Math.random() * 25);
                 } else {
-                    // Current semester (newest) - no grades yet, đang học
                     enrollment.attendance_score = null;
                     enrollment.assignment_score = null;
                     enrollment.midterm_score = null;
@@ -605,8 +534,312 @@ public class DatabaseInitializer {
                 }
 
             } catch (Exception e) {
-                android.util.Log.e("DatabaseInitializer", "Error adding course " + courseData[0] + ": " + e.getMessage());
+                android.util.Log.e("DatabaseInitializer", "Error adding course " + (i < coursesData.length ? coursesData[i][0] : "unknown") + ": " + e.getMessage());
             }
         }
+    }
+
+    // Đảm bảo schedules luôn được tạo cho tháng hiện tại (đồng bộ với Monthly Calendar)
+    public static void ensureSchedulesForCurrentWeek(EducationDatabase db) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        
+        String currentMonth = monthFormat.format(cal.getTime());
+        
+        // Kiểm tra xem đã có schedules cho tháng hiện tại chưa
+        List<Schedule> allSchedules = db.scheduleDao().getAll();
+        boolean hasCurrentMonthSchedules = false;
+        if (allSchedules != null && !allSchedules.isEmpty()) {
+            for (Schedule s : allSchedules) {
+                if (s.date != null && s.date.startsWith(currentMonth)) {
+                    hasCurrentMonthSchedules = true;
+                    break;
+                }
+            }
+        }
+        
+        // Nếu chưa có schedules cho tháng hiện tại, tạo mới cho toàn bộ tháng
+        if (!hasCurrentMonthSchedules) {
+            insertSampleSchedulesForMonth(db, currentMonth);
+        }
+    }
+
+    // Khởi tạo dữ liệu mẫu cho schedules - tạo cho toàn bộ tháng (đồng bộ với Monthly Calendar)
+    private static void insertSampleSchedulesForMonth(EducationDatabase db, String month) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        List<Class> classes = db.classDao().getAll();
+        
+        if (classes == null || classes.isEmpty()) return;
+
+        try {
+            // Parse tháng (yyyy-MM) để lấy năm và tháng
+            String[] parts = month.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int monthInt = Integer.parseInt(parts[1]) - 1; // Calendar.MONTH is 0-based
+            
+            // Tạo schedules cho các ngày trong tháng (tương tự như Monthly Calendar hiển thị)
+            // Ngày 3 - Lớp 1 (Lecture)
+            if (classes.size() > 0) {
+                cal.set(year, monthInt, 3);
+                Schedule schedule1 = new Schedule();
+                schedule1.class_id = classes.get(0).class_id;
+                schedule1.date = sdf.format(cal.getTime());
+                schedule1.time = "07:00-09:00";
+                schedule1.room = "A101";
+                schedule1.type = "lecture";
+                schedule1.status = "scheduled";
+                db.scheduleDao().insert(schedule1);
+
+                // Ngày 4 - Lớp 1 (Lab)
+                cal.set(year, monthInt, 4);
+                Schedule schedule4 = new Schedule();
+                schedule4.class_id = classes.get(0).class_id;
+                schedule4.date = sdf.format(cal.getTime());
+                schedule4.time = "14:00-16:00";
+                schedule4.room = "A101";
+                schedule4.type = "lab";
+                schedule4.status = "scheduled";
+                db.scheduleDao().insert(schedule4);
+            }
+
+            // Ngày 6 - Lớp 2 (Lecture)
+            if (classes.size() > 1) {
+                cal.set(year, monthInt, 6);
+                Schedule schedule2 = new Schedule();
+                schedule2.class_id = classes.get(1).class_id;
+                schedule2.date = sdf.format(cal.getTime());
+                schedule2.time = "09:00-11:00";
+                schedule2.room = "B202";
+                schedule2.type = "lecture";
+                schedule2.status = "scheduled";
+                db.scheduleDao().insert(schedule2);
+            }
+
+            // Ngày 8 - Lớp 3 (Lab)
+            if (classes.size() > 2) {
+                cal.set(year, monthInt, 8);
+                Schedule schedule3 = new Schedule();
+                schedule3.class_id = classes.get(2).class_id;
+                schedule3.date = sdf.format(cal.getTime());
+                schedule3.time = "13:00-15:00";
+                schedule3.room = "C303";
+                schedule3.type = "lab";
+                schedule3.status = "scheduled";
+                db.scheduleDao().insert(schedule3);
+            }
+
+            // Thêm schedules cho tuần hiện tại (để đảm bảo có dữ liệu cho Weekly Schedule)
+            insertSampleSchedules(db);
+        } catch (Exception e) {
+            android.util.Log.e("DatabaseInitializer", "Error creating schedules for month: " + month, e);
+            // Fallback: tạo schedules cho tuần hiện tại
+            insertSampleSchedules(db);
+        }
+    }
+
+    // Khởi tạo dữ liệu mẫu cho schedules - tạo trong tuần hiện tại
+    private static void insertSampleSchedules(EducationDatabase db) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        List<Class> classes = db.classDao().getAll();
+        
+        if (classes == null || classes.isEmpty()) return;
+
+        // Lấy thứ 2 của tuần hiện tại
+        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        int daysFromMonday = (dayOfWeek == Calendar.SUNDAY) ? 6 : dayOfWeek - Calendar.MONDAY;
+        cal.add(Calendar.DAY_OF_MONTH, -daysFromMonday);
+        Calendar mondayCal = (Calendar) cal.clone();
+        
+        // Tạo schedules cho tuần hiện tại
+        // Thứ 2 - Lớp 1
+        if (classes.size() > 0) {
+            Schedule schedule1 = new Schedule();
+            schedule1.class_id = classes.get(0).class_id;
+            schedule1.date = sdf.format(cal.getTime());
+            schedule1.time = "07:00-09:00";
+            schedule1.room = "A101";
+            schedule1.type = "lecture";
+            schedule1.status = "scheduled";
+            db.scheduleDao().insert(schedule1);
+
+            // Thứ 3 - Lớp 1 (thêm)
+            cal = (Calendar) mondayCal.clone();
+            cal.add(Calendar.DAY_OF_MONTH, 1); // Thứ 3
+            Schedule schedule4 = new Schedule();
+            schedule4.class_id = classes.get(0).class_id;
+            schedule4.date = sdf.format(cal.getTime());
+            schedule4.time = "14:00-16:00";
+            schedule4.room = "A101";
+            schedule4.type = "lab";
+            schedule4.status = "scheduled";
+            db.scheduleDao().insert(schedule4);
+        }
+
+        // Thứ 4 - Lớp 2
+        if (classes.size() > 1) {
+            cal = (Calendar) mondayCal.clone();
+            cal.add(Calendar.DAY_OF_MONTH, 3); // Thứ 4
+            Schedule schedule2 = new Schedule();
+            schedule2.class_id = classes.get(1).class_id;
+            schedule2.date = sdf.format(cal.getTime());
+            schedule2.time = "09:00-11:00";
+            schedule2.room = "B202";
+            schedule2.type = "lecture";
+            schedule2.status = "scheduled";
+            db.scheduleDao().insert(schedule2);
+        }
+
+        // Thứ 6 - Lớp 3
+        if (classes.size() > 2) {
+            cal = (Calendar) mondayCal.clone();
+            cal.add(Calendar.DAY_OF_MONTH, 5); // Thứ 6
+            Schedule schedule3 = new Schedule();
+            schedule3.class_id = classes.get(2).class_id;
+            schedule3.date = sdf.format(cal.getTime());
+            schedule3.time = "13:00-15:00";
+            schedule3.room = "C303";
+            schedule3.type = "lab";
+            schedule3.status = "scheduled";
+            db.scheduleDao().insert(schedule3);
+        }
+    }
+
+    // Khởi tạo dữ liệu mẫu cho exams
+    private static void insertSampleExams(EducationDatabase db) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, 7);
+        List<Course> courses = db.courseDao().getAll();
+
+        if (courses == null || courses.isEmpty()) return;
+
+        if (courses.size() > 0) {
+            Exam exam1 = new Exam();
+            exam1.course_id = courses.get(0).course_id;
+            exam1.date = sdf.format(cal.getTime());
+            exam1.time = "08:00";
+            exam1.room = "A101";
+            exam1.seat = "A15";
+            exam1.duration = 90;
+            exam1.type = "midterm";
+            exam1.status = "scheduled";
+            db.examDao().insert(exam1);
+        }
+
+        if (courses.size() > 1) {
+            cal.add(Calendar.DAY_OF_MONTH, 3);
+            Exam exam2 = new Exam();
+            exam2.course_id = courses.get(1).course_id;
+            exam2.date = sdf.format(cal.getTime());
+            exam2.time = "09:00";
+            exam2.room = "B202";
+            exam2.seat = "B20";
+            exam2.duration = 120;
+            exam2.type = "midterm";
+            exam2.status = "scheduled";
+            db.examDao().insert(exam2);
+        }
+    }
+
+    // Khởi tạo dữ liệu mẫu cho attendance riêng cho từng student
+    private static void insertSampleAttendanceForStudent(EducationDatabase db, long studentId) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, -14);
+
+        List<Enrollment> enrollments = db.enrollmentDao().getByStudent(studentId);
+        if (enrollments == null || enrollments.isEmpty()) return;
+
+        List<Schedule> allSchedules = db.scheduleDao().getAll();
+        if (allSchedules == null || allSchedules.isEmpty()) return;
+
+        int attendanceCount = 0;
+        String[] statuses = {"present", "present", "late", "present", "absent", "present"};
+        String[] remarks = {
+            "Có mặt đầy đủ",
+            "Tham gia tích cực",
+            "Đến muộn 10 phút",
+            "Có mặt đầy đủ",
+            "Vắng mặt có phép",
+            "Có mặt đầy đủ"
+        };
+
+        for (Enrollment enrollment : enrollments) {
+            for (Schedule schedule : allSchedules) {
+                if (schedule.class_id == enrollment.class_id && attendanceCount < 6) {
+                    AttendanceDetail att = new AttendanceDetail();
+                    att.student_id = studentId;
+                    att.schedule_id = schedule.id;
+                    att.date = sdf.format(cal.getTime());
+                    att.status = statuses[attendanceCount % statuses.length];
+                    att.remark = remarks[attendanceCount % remarks.length];
+                    att.duration = 120;
+                    att.type = "lecture";
+                    db.attendanceDetailDao().insert(att);
+                    
+                    cal.add(Calendar.DAY_OF_MONTH, 2);
+                    attendanceCount++;
+                    
+                    if (attendanceCount >= 6) break;
+                }
+            }
+            if (attendanceCount >= 6) break;
+        }
+    }
+
+    // Khởi tạo dữ liệu mẫu cho notifications
+    private static void insertSampleNotifications(EducationDatabase db, long lecturer1Id, long lecturer2Id) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+        Notification notif1 = new Notification();
+        notif1.title = "Thông báo lịch thi";
+        notif1.content = "Lịch thi giữa kỳ sẽ được công bố vào tuần tới";
+        notif1.sender_id = lecturer1Id;
+        notif1.role_target = "student";
+        notif1.date = sdf.format(new Date());
+        db.notificationDao().insert(notif1);
+
+        Notification notif2 = new Notification();
+        notif2.title = "Thay đổi lịch học";
+        notif2.content = "Lớp Cơ Sở Dữ Liệu sẽ học bù vào thứ 7";
+        notif2.sender_id = lecturer2Id;
+        notif2.role_target = "student";
+        notif2.date = sdf.format(new Date());
+        db.notificationDao().insert(notif2);
+    }
+
+    // Khởi tạo dữ liệu mẫu cho feedback riêng cho từng student
+    private static void insertSampleFeedbackForStudent(EducationDatabase db, long studentId, long lecturer1Id, long lecturer2Id) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        
+        User student = db.userDao().getUserById(studentId);
+        String studentName = student != null && student.name != null ? student.name : "Sinh viên";
+
+        Feedback feedback1 = new Feedback();
+        feedback1.user_id = lecturer1Id;
+        feedback1.student_id = studentId;
+        feedback1.subject = "Phản hồi về môn Lập Trình Java";
+        feedback1.content = "Môn học rất hay và bổ ích, giảng viên giảng dạy nhiệt tình. Em rất hài lòng với phương pháp giảng dạy.";
+        feedback1.category = "course";
+        feedback1.date = sdf.format(new Date());
+        feedback1.rating = 5;
+        feedback1.status = "pending";
+        feedback1.response = "";
+        db.feedbackDao().insert(feedback1);
+
+        Feedback feedback2 = new Feedback();
+        feedback2.user_id = lecturer2Id;
+        feedback2.student_id = studentId;
+        feedback2.subject = "Góp ý về hệ thống";
+        feedback2.content = "Hệ thống cần cải thiện tốc độ tải trang và thêm tính năng thông báo real-time.";
+        feedback2.category = "system";
+        feedback2.date = sdf.format(new Date());
+        feedback2.rating = 4;
+        feedback2.status = "responded";
+        feedback2.response = "Cảm ơn bạn đã phản hồi. Chúng tôi sẽ xem xét và cải thiện trong thời gian tới.";
+        db.feedbackDao().insert(feedback2);
     }
 }

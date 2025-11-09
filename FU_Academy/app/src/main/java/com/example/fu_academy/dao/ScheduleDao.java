@@ -11,6 +11,15 @@ public interface ScheduleDao {
     @Insert
     long insert(Schedule s);
 
+    @Update
+    void update(Schedule s);
+
+    @Delete
+    void delete(Schedule s);
+
+    @Query("DELETE FROM Schedule")
+    void deleteAll();
+
     @Query("SELECT * FROM Schedule WHERE class_id = :classId")
     List<Schedule> getByClass(long classId);
 

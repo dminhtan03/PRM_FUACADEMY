@@ -31,11 +31,24 @@ public class WeeklyScheduleViewModel extends AndroidViewModel {
     public void loadWeeklySchedule(long studentId, String startDate) {
         List<ScheduleItem> scheduleItems = new ArrayList<>();
         
+        android.util.Log.d("WeeklyScheduleVM", "Loading schedule for studentId: " + studentId + ", startDate: " + startDate);
+        
         // Get all enrollments for the student
         List<Enrollment> enrollments = db.enrollmentDao().getByStudent(studentId);
+        android.util.Log.d("WeeklyScheduleVM", "Found " + (enrollments != null ? enrollments.size() : 0) + " enrollments");
+        
         List<Long> classIds = new ArrayList<>();
-        for (Enrollment e : enrollments) {
-            classIds.add(e.class_id);
+        if (enrollments != null) {
+            for (Enrollment e : enrollments) {
+                classIds.add(e.class_id);
+                android.util.Log.d("WeeklyScheduleVM", "Enrollment class_id: " + e.class_id);
+            }
+        }
+        
+        if (classIds.isEmpty()) {
+            android.util.Log.w("WeeklyScheduleVM", "No enrollments found for studentId: " + studentId);
+            weeklySchedule.postValue(scheduleItems);
+            return;
         }
         
         // Get schedules for the week
@@ -44,43 +57,70 @@ public class WeeklyScheduleViewModel extends AndroidViewModel {
         try {
             cal.setTime(sdf.parse(startDate));
         } catch (Exception e) {
+            android.util.Log.e("WeeklyScheduleVM", "Error parsing startDate: " + startDate, e);
             cal.setTime(new Date());
         }
         
-        // Get end date (7 days later)
+        // Get end date (7 days later - thứ 7 của tuần)
         Calendar endCal = (Calendar) cal.clone();
-        endCal.add(Calendar.DAY_OF_MONTH, 7);
+        endCal.add(Calendar.DAY_OF_MONTH, 6); // Thứ 7 (6 ngày sau thứ 2)
         String endDate = sdf.format(endCal.getTime());
+        
+        android.util.Log.d("WeeklyScheduleVM", "Date range: " + startDate + " to " + endDate + " (Monday to Sunday)");
         
         // Get all schedules
         List<Schedule> allSchedules = db.scheduleDao().getAll();
+        android.util.Log.d("WeeklyScheduleVM", "Total schedules in DB: " + (allSchedules != null ? allSchedules.size() : 0));
         
-        for (Schedule schedule : allSchedules) {
-            if (classIds.contains(schedule.class_id) && 
-                schedule.date != null && 
-                schedule.date.compareTo(startDate) >= 0 && 
-                schedule.date.compareTo(endDate) < 0) {
+        if (allSchedules != null) {
+            for (Schedule schedule : allSchedules) {
+                android.util.Log.d("WeeklyScheduleVM", "Checking schedule: class_id=" + schedule.class_id + ", date=" + schedule.date + ", time=" + schedule.time);
                 
-                Class classObj = db.classDao().findById(schedule.class_id);
-                if (classObj != null) {
-                    Course course = db.courseDao().findById(classObj.course_id);
-                    User lecturer = db.userDao().getUserById(classObj.lecturer_id);
+                // Kiểm tra xem schedule có thuộc tuần này không (từ thứ 2 đến thứ 7)
+                boolean isInWeek = false;
+                if (schedule.date != null) {
+                    try {
+                        Date scheduleDate = sdf.parse(schedule.date);
+                        Date weekStart = sdf.parse(startDate);
+                        Date weekEnd = sdf.parse(endDate);
+                        
+                        // So sánh dates (bao gồm cả startDate và endDate)
+                        isInWeek = (scheduleDate.compareTo(weekStart) >= 0 && scheduleDate.compareTo(weekEnd) <= 0);
+                        
+                        android.util.Log.d("WeeklyScheduleVM", "Schedule date " + schedule.date + " in week? " + isInWeek);
+                    } catch (Exception e) {
+                        android.util.Log.e("WeeklyScheduleVM", "Error parsing schedule date: " + schedule.date, e);
+                    }
+                }
+                
+                if (classIds.contains(schedule.class_id) && isInWeek) {
                     
-                    ScheduleItem item = new ScheduleItem();
-                    item.schedule = schedule;
-                    item.courseName = course != null ? course.name : "N/A";
-                    item.lecturerName = lecturer != null ? lecturer.name : "N/A";
-                    item.room = schedule.room;
-                    item.date = schedule.date;
-                    item.time = schedule.time;
-                    item.status = schedule.status;
-                    item.type = schedule.type;
+                    android.util.Log.d("WeeklyScheduleVM", "Schedule matches! Adding to list");
                     
-                    scheduleItems.add(item);
+                    Class classObj = db.classDao().findById(schedule.class_id);
+                    if (classObj != null) {
+                        Course course = db.courseDao().findById(classObj.course_id);
+                        User lecturer = db.userDao().getUserById(classObj.lecturer_id);
+                        
+                        ScheduleItem item = new ScheduleItem();
+                        item.schedule = schedule;
+                        item.courseName = course != null ? course.name : "N/A";
+                        item.lecturerName = lecturer != null ? lecturer.name : "N/A";
+                        item.room = schedule.room;
+                        item.date = schedule.date;
+                        item.time = schedule.time;
+                        item.status = schedule.status;
+                        item.type = schedule.type;
+                        
+                        scheduleItems.add(item);
+                    } else {
+                        android.util.Log.w("WeeklyScheduleVM", "Class not found for class_id: " + schedule.class_id);
+                    }
                 }
             }
         }
         
+        android.util.Log.d("WeeklyScheduleVM", "Total schedule items found: " + scheduleItems.size());
         weeklySchedule.postValue(scheduleItems);
     }
 

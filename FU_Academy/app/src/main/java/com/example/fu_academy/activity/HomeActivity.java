@@ -129,18 +129,18 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (spinnerMenu == null) return;
         
         String[] menuItems = {
-            "DashBoard",
-            "Weekly Schedule",
-            "Monthly Calendar",
-            "Exam Schedule",
-            "Attendance Detail",
-            "Academic Summary",
-            "Feedback Form",
-            "Curriculum",
-            "Grade per Semester",
-            "Assignment List",
-            "Material List",
-            "Submission List"
+            "Bảng điều khiển",
+            "Lịch học theo tuần",
+            "Lịch học theo tháng",
+            "Lịch thi",
+            "Báo cáo điểm danh",
+            "Tổng kết học tập",
+            "Ý kiến đánh giá",
+            "Khung chương trình",
+            "Điểm theo kỳ",
+            "Danh sách bài tập",
+            "Tài liệu môn học",
+            "Bài tập đã nộp"
         };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
@@ -160,43 +160,43 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 String selected = parent.getItemAtPosition(position).toString();
 
                 switch (selected) {
-                    case "Weekly Schedule":
+                    case "Lịch học theo tuần":
                         startActivity(new Intent(HomeActivity.this, WeeklyScheduleActivity.class));
                         break;
-                    case "Monthly Calendar":
+                    case "Lịch học theo tháng":
                         startActivity(new Intent(HomeActivity.this, MonthlyCalendarActivity.class));
                         break;
-                    case "Exam Schedule":
+                    case "Lịch thi":
                         startActivity(new Intent(HomeActivity.this, ExamScheduleActivity.class));
                         break;
-                    case "Attendance Detail":
+                    case "Báo cáo điểm danh":
                         startActivity(new Intent(HomeActivity.this, AttendanceDetailActivity.class));
                         break;
-                    case "Academic Summary":
+                    case "Tổng kết học tập":
                         startActivity(new Intent(HomeActivity.this, AcademicSummaryActivity.class));
                         break;
-                    case "Feedback Form":
+                    case "Ý kiến đánh giá":
                         startActivity(new Intent(HomeActivity.this, FeedbackFormActivity.class));
                         break;
-                    case "Curriculum":
+                    case "Khung chương trình":
                         startActivity(new Intent(HomeActivity.this, CourseListActivity.class));
                         break;
-                    case "Grade per Semester":
+                    case "Điểm theo kỳ":
                         startActivity(new Intent(HomeActivity.this, GradePerSemesterActivity.class));
                         break;
-                    case "Assignment List":
+                    case "Danh sách bài tập":
                         // Need course_id, for now open with default or show all
                         Intent assignmentIntent = new Intent(HomeActivity.this, AssignmentListActivity.class);
                         // You can pass course_id if available, or modify to show all assignments
                         assignmentIntent.putExtra("course_id", -1); // -1 means show all
                         startActivity(assignmentIntent);
                         break;
-                    case "Material List":
+                    case "Tài liệu môn học":
                         Intent materialIntent = new Intent(HomeActivity.this, MaterialListActivity.class);
                         materialIntent.putExtra("course_id", -1); // -1 means show all
                         startActivity(materialIntent);
                         break;
-                    case "Submission List":
+                    case "Bài tập đã nộp":
                         startActivity(new Intent(HomeActivity.this, SubmissionListActivity.class));
                         break;
                 }
