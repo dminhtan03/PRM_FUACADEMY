@@ -1,5 +1,6 @@
 package com.example.fu_academy.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -36,13 +37,33 @@ public class CourseListActivity extends AppCompatActivity {
         listView = findViewById(R.id.listViewCourses);
         courseViewModel = new ViewModelProvider(this).get(CourseViewModel.class);
 
-        courseViewModel.getCourses().observe(this, courses -> {
-            List<String> names = new ArrayList<>();
-            for (Course c : courses) {
-                names.add(c.name + " - " + c.semester);
-            }
-            listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, names));
-        });
+        // Get student ID from SharedPreferences (saved during login)
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        long studentId = prefs.getLong("student_id", -1);
+
+        // Load courses for the logged-in student
+        if (studentId > 0) {
+            courseViewModel.getCoursesByStudent(studentId).observe(this, courses -> {
+                List<String> names = new ArrayList<>();
+                if (courses != null && !courses.isEmpty()) {
+                    for (Course c : courses) {
+                        names.add(c.name + " - " + c.semester);
+                    }
+                } else {
+                    names.add("Bạn chưa đăng ký khóa học nào");
+                }
+                listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, names));
+            });
+        } else {
+            // Fallback: show all courses if student_id is not available
+            courseViewModel.getCourses().observe(this, courses -> {
+                List<String> names = new ArrayList<>();
+                for (Course c : courses) {
+                    names.add(c.name + " - " + c.semester);
+                }
+                listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, names));
+            });
+        }
     }
 
     @Override

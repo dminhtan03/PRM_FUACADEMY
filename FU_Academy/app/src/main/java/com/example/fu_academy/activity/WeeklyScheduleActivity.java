@@ -36,10 +36,28 @@ public class WeeklyScheduleActivity extends ComponentActivity {
         recyclerView.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(this).get(WeeklyScheduleViewModel.class);
+        
+        // Đảm bảo database được khởi tạo
+        com.example.fu_academy.database.EducationDatabase.getInstance(this);
 
-        // Get student ID
+        // Get student ID from SharedPreferences (saved during login)
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        long studentId = prefs.getLong("student_id", 1);
+        long studentId = prefs.getLong("student_id", -1);
+        
+        // Nếu không có student_id, thử lấy từ user_id
+        if (studentId <= 0) {
+            long userId = prefs.getLong("user_id", -1);
+            if (userId > 0) {
+                // Kiểm tra xem user có phải là student không
+                com.example.fu_academy.database.EducationDatabase db = 
+                    com.example.fu_academy.database.EducationDatabase.getInstance(this);
+                com.example.fu_academy.entity.User user = db.userDao().getUserById(userId);
+                if (user != null && "student".equalsIgnoreCase(user.role)) {
+                    studentId = userId;
+                    prefs.edit().putLong("student_id", studentId).apply();
+                }
+            }
+        }
 
         // Get current week start date
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());

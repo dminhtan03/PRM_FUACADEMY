@@ -39,11 +39,11 @@ import com.example.fu_academy.entity.OTP;
         entities = {
                 User.class, Course.class, Class.class, Enrollment.class,
                 Material.class, Assignment.class, Submission.class,
-                Notification.class, Feedback.class, Schedule.class,
+                Notification.class, Schedule.class,
                 Exam.class, AttendanceDetail.class,
-                Notification.class, Feedback.class, Schedule.class, OTP.class
+                Feedback.class, OTP.class
         },
-        version = 3,
+        version = 4,
         exportSchema = false
 )
 public abstract class EducationDatabase extends RoomDatabase {

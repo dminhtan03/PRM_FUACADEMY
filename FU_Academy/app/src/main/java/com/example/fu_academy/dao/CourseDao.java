@@ -25,4 +25,10 @@ public interface CourseDao {
 
     @Query("SELECT * FROM Course WHERE lecturer_id = :lecturerId")
     List<Course> getCoursesByLecturer(long lecturerId);
+
+    @Query("SELECT DISTINCT c.* FROM Course c " +
+           "INNER JOIN Class cl ON c.course_id = cl.course_id " +
+           "INNER JOIN Enrollment e ON cl.class_id = e.class_id " +
+           "WHERE e.student_id = :studentId")
+    List<Course> getCoursesByStudent(long studentId);
 }

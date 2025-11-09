@@ -1,9 +1,13 @@
 package com.example.fu_academy.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -17,6 +21,7 @@ import com.example.fu_academy.R;
 import com.example.fu_academy.entity.User;
 import com.example.fu_academy.helper.SharedPreferencesHelper;
 import com.example.fu_academy.viewmodel.UserViewModel;
+import com.example.fu_academy.viewmodel.StudentDashboardViewModel;
 import com.google.android.material.navigation.NavigationView;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -25,8 +30,15 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private TextView txtWelcome;
     private UserViewModel userViewModel;
+    private StudentDashboardViewModel dashboardViewModel;
     private SharedPreferencesHelper prefsHelper;
     private User currentUser;
+    
+    // Dashboard views
+    private TextView tvGPA, tvTotalCredits, tvSemester, tvNotificationCount;
+    private TextView tvUpcomingClass, tvAttendanceRate, tvRank, tvFeedbackCount;
+    private Spinner spinnerMenu;
+    private View dashboardContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +52,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         prefsHelper = new SharedPreferencesHelper(this);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
+        dashboardViewModel = new ViewModelProvider(this).get(StudentDashboardViewModel.class);
+        
+        // Đảm bảo database được khởi tạo
+        com.example.fu_academy.database.EducationDatabase.getInstance(this);
+
+        // Initialize dashboard views
+        initDashboardViews();
 
         // Setup toolbar
         setSupportActionBar(toolbar);
@@ -70,6 +89,176 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 currentUser = user;
                 updateWelcomeMessage(user);
                 updateNavigationHeader(user);
+                
+                // Load dashboard data if user is a student
+                if ("student".equalsIgnoreCase(user.role)) {
+                    if (dashboardContainer != null) {
+                        dashboardContainer.setVisibility(View.VISIBLE);
+                    }
+                    loadDashboardData();
+                } else {
+                    // Hide dashboard for non-students
+                    if (dashboardContainer != null) {
+                        dashboardContainer.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+    }
+    
+    private void initDashboardViews() {
+        tvGPA = findViewById(R.id.tvGPA);
+        tvTotalCredits = findViewById(R.id.tvTotalCredits);
+        tvSemester = findViewById(R.id.tvSemester);
+        tvNotificationCount = findViewById(R.id.tvNotificationCount);
+        tvUpcomingClass = findViewById(R.id.tvUpcomingClass);
+        tvAttendanceRate = findViewById(R.id.tvAttendanceRate);
+        tvRank = findViewById(R.id.tvRank);
+        tvFeedbackCount = findViewById(R.id.tvFeedbackCount);
+        spinnerMenu = findViewById(R.id.spinnerMenu);
+        dashboardContainer = findViewById(R.id.dashboardContainer);
+        
+        // Setup spinner menu
+        setupSpinnerMenu();
+        
+        // Observe dashboard data
+        observeDashboardData();
+    }
+    
+    private void setupSpinnerMenu() {
+        if (spinnerMenu == null) return;
+        
+        String[] menuItems = {
+            "DashBoard",
+            "Weekly Schedule",
+            "Monthly Calendar",
+            "Exam Schedule",
+            "Attendance Detail",
+            "Academic Summary",
+            "Feedback Form"
+        };
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, menuItems);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerMenu.setAdapter(adapter);
+
+        spinnerMenu.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            boolean isFirstSelect = true;
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (isFirstSelect) {
+                    isFirstSelect = false;
+                    return;
+                }
+
+                String selected = parent.getItemAtPosition(position).toString();
+
+                switch (selected) {
+                    case "Weekly Schedule":
+                        startActivity(new Intent(HomeActivity.this, WeeklyScheduleActivity.class));
+                        break;
+                    case "Monthly Calendar":
+                        startActivity(new Intent(HomeActivity.this, MonthlyCalendarActivity.class));
+                        break;
+                    case "Exam Schedule":
+                        startActivity(new Intent(HomeActivity.this, ExamScheduleActivity.class));
+                        break;
+                    case "Attendance Detail":
+                        startActivity(new Intent(HomeActivity.this, AttendanceDetailActivity.class));
+                        break;
+                    case "Academic Summary":
+                        startActivity(new Intent(HomeActivity.this, AcademicSummaryActivity.class));
+                        break;
+                    case "Feedback Form":
+                        startActivity(new Intent(HomeActivity.this, FeedbackFormActivity.class));
+                        break;
+                }
+
+                spinnerMenu.setSelection(0);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+    
+    private void loadDashboardData() {
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        long studentId = prefs.getLong("student_id", -1);
+        
+        // Nếu không có student_id trong SharedPreferences, thử lấy từ user_id
+        if (studentId <= 0 && currentUser != null && "student".equalsIgnoreCase(currentUser.role)) {
+            studentId = currentUser.user_id;
+            // Lưu lại để dùng sau
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putLong("student_id", studentId);
+            editor.apply();
+        }
+        
+        // Debug: Log studentId để kiểm tra
+        android.util.Log.d("HomeActivity", "Loading dashboard data for studentId: " + studentId);
+        
+        if (studentId > 0 && dashboardViewModel != null) {
+            dashboardViewModel.loadDashboardData(studentId);
+        } else {
+            android.util.Log.e("HomeActivity", "Cannot load dashboard: studentId=" + studentId + ", viewModel=" + (dashboardViewModel != null));
+        }
+    }
+    
+    private void observeDashboardData() {
+        if (dashboardViewModel == null) return;
+        
+        dashboardViewModel.getGpa().observe(this, gpa -> {
+            if (tvGPA != null && gpa != null) {
+                tvGPA.setText(String.format("%.2f", gpa));
+            }
+        });
+
+        dashboardViewModel.getTotalCredits().observe(this, credits -> {
+            if (tvTotalCredits != null && credits != null) {
+                tvTotalCredits.setText(String.valueOf(credits));
+            }
+        });
+
+        dashboardViewModel.getSemester().observe(this, semester -> {
+            if (tvSemester != null && semester != null) {
+                tvSemester.setText(semester);
+            }
+        });
+
+        dashboardViewModel.getNotificationCount().observe(this, count -> {
+            if (tvNotificationCount != null && count != null) {
+                tvNotificationCount.setText(String.valueOf(count));
+            }
+        });
+
+        dashboardViewModel.getUpcomingClass().observe(this, schedule -> {
+            if (tvUpcomingClass != null) {
+                if (schedule != null) {
+                    String classInfo = schedule.date + " " + schedule.time + " - " + schedule.room;
+                    tvUpcomingClass.setText(classInfo);
+                } else {
+                    tvUpcomingClass.setText("Không có lớp sắp tới");
+                }
+            }
+        });
+
+        dashboardViewModel.getAttendanceRate().observe(this, rate -> {
+            if (tvAttendanceRate != null && rate != null) {
+                tvAttendanceRate.setText(String.format("%.1f%%", rate));
+            }
+        });
+
+        dashboardViewModel.getRank().observe(this, rank -> {
+            if (tvRank != null && rank != null) {
+                tvRank.setText("#" + rank);
+            }
+        });
+
+        dashboardViewModel.getFeedbackCount().observe(this, count -> {
+            if (tvFeedbackCount != null && count != null) {
+                tvFeedbackCount.setText(String.valueOf(count));
             }
         });
     }
@@ -147,6 +336,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         long userId = prefsHelper.getUserId();
         if (userId > 0) {
             userViewModel.getUserById(userId);
+        }
+        
+        // Reload dashboard data if user is student
+        if (currentUser != null && "student".equalsIgnoreCase(currentUser.role)) {
+            loadDashboardData();
         }
     }
 }

@@ -68,3 +68,4 @@ public class AcademicSummaryAdapter extends RecyclerView.Adapter<AcademicSummary
 }
 
 
+

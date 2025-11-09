@@ -23,17 +23,8 @@ public class MainActivity extends ComponentActivity {
         try {
             setContentView(R.layout.activity_main);
 
-            // Initialize default student ID if not exists
-            SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-            if (!prefs.contains("student_id")) {
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putLong("student_id", 1);
-                editor.putLong("user_id", 1);
-                editor.apply();
-            }
-
-            // Initialize sample data
-            com.example.fu_academy.database.DatabaseInitializer.initializeDatabase(this);
+            // Đảm bảo database được khởi tạo (sử dụng helper/DatabaseInitializer)
+            com.example.fu_academy.database.EducationDatabase.getInstance(this);
 
             bottomNavigationView = findViewById(R.id.bottomNavigationView);
             

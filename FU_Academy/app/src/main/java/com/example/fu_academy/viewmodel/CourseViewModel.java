@@ -23,4 +23,9 @@ public class CourseViewModel extends AndroidViewModel {
         courseList.postValue(db.courseDao().getAll());
         return courseList;
     }
+
+    public LiveData<List<Course>> getCoursesByStudent(long studentId) {
+        courseList.postValue(db.courseDao().getCoursesByStudent(studentId));
+        return courseList;
+    }
 }

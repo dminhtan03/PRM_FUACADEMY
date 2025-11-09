@@ -12,14 +12,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FU_Academy">
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!--        <activity android:name=".activity.MainActivity" />-->
+        <activity android:name=".activity.MainActivity" />
         <activity android:name=".activity.StudentDashboardActivity" />
         <activity android:name=".activity.WeeklyScheduleActivity" />
         <activity android:name=".activity.MonthlyCalendarActivity" />
@@ -29,6 +29,7 @@
         <activity android:name=".activity.FeedbackFormActivity" />
         <activity android:name=".activity.CourseListActivity" />
         <activity android:name=".activity.HomeActivity" />
+<!--        <activity android:name=".activity.LoginActivity" />-->
         <activity android:name=".activity.ForgotPasswordActivity" />
         <activity android:name=".activity.VerifyOTPActivity" />
         <activity android:name=".activity.ChangePasswordActivity" />

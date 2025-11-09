@@ -35,10 +35,10 @@ public class FeedbackFormActivity extends ComponentActivity {
         initViews();
         viewModel = new ViewModelProvider(this).get(FeedbackFormViewModel.class);
 
-        // Get user IDs
+        // Get user IDs from SharedPreferences (saved during login)
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        long userId = prefs.getLong("user_id", 1);
-        long studentId = prefs.getLong("student_id", 1);
+        long userId = prefs.getLong("user_id", -1);
+        long studentId = prefs.getLong("student_id", -1);
 
         // Load existing feedbacks
         viewModel.loadFeedbackList(studentId);

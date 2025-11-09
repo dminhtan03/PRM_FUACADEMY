@@ -37,6 +37,23 @@ public class StudentDashboardViewModel extends AndroidViewModel {
 
     public void loadDashboardData(long studentId) {
         try {
+            // Kiểm tra studentId hợp lệ
+            if (studentId <= 0) {
+                android.util.Log.e("StudentDashboardViewModel", "Invalid studentId: " + studentId);
+                // Set default values
+                gpa.postValue(0.0);
+                totalCredits.postValue(0);
+                semester.postValue("N/A");
+                notificationCount.postValue(0);
+                upcomingClass.postValue(null);
+                attendanceRate.postValue(0.0);
+                rank.postValue(0);
+                feedbackCount.postValue(0);
+                return;
+            }
+            
+            android.util.Log.d("StudentDashboardViewModel", "Loading dashboard data for studentId: " + studentId);
+            
             // Initialize default values
             gpa.postValue(0.0);
             totalCredits.postValue(0);
@@ -49,6 +66,8 @@ public class StudentDashboardViewModel extends AndroidViewModel {
             
             // Calculate GPA and Total Credits
             List<Enrollment> enrollments = db.enrollmentDao().getByStudent(studentId);
+            android.util.Log.d("StudentDashboardViewModel", "Found " + (enrollments != null ? enrollments.size() : 0) + " enrollments for studentId: " + studentId);
+            
             if (enrollments == null) {
                 enrollments = new java.util.ArrayList<>();
             }
@@ -56,15 +75,27 @@ public class StudentDashboardViewModel extends AndroidViewModel {
             double totalPoints = 0;
             int totalCreditsValue = 0;
             
+            android.util.Log.d("StudentDashboardViewModel", "Processing " + enrollments.size() + " enrollments");
+            
             for (Enrollment e : enrollments) {
-                if (e != null && e.grade != null && e.grade > 0) {
+                if (e != null) {
+                    // Kiểm tra grade - có thể là Double hoặc null
+                    double gradeValue = (e.grade != null) ? e.grade : 0.0;
+                    android.util.Log.d("StudentDashboardViewModel", "Enrollment: class_id=" + e.class_id + ", grade=" + gradeValue);
+                    
+                    // Tính credits ngay cả khi grade = 0 để hiển thị tổng tín chỉ
                     int credits = getCourseCredits(e.class_id);
                     totalCreditsValue += credits;
-                    totalPoints += e.grade * credits;
+                    
+                    if (gradeValue > 0) {
+                        totalPoints += gradeValue * credits;
+                    }
                 }
             }
             
             double gpaValue = totalCreditsValue > 0 ? totalPoints / totalCreditsValue : 0.0;
+            android.util.Log.d("StudentDashboardViewModel", "Calculated GPA: " + gpaValue + ", Total Credits: " + totalCreditsValue);
+            
             gpa.postValue(gpaValue);
             totalCredits.postValue(totalCreditsValue);
             
@@ -140,7 +171,7 @@ public class StudentDashboardViewModel extends AndroidViewModel {
             
             // Feedback count
             try {
-                List<Feedback> feedbacks = db.feedbackDao().getByUser(studentId);
+                List<Feedback> feedbacks = db.feedbackDao().getByStudent(studentId);
                 feedbackCount.postValue(feedbacks != null ? feedbacks.size() : 0);
             } catch (Exception e) {
                 e.printStackTrace();

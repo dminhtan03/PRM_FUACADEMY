@@ -30,9 +30,9 @@ public class AcademicSummaryActivity extends ComponentActivity {
 
         viewModel = new ViewModelProvider(this).get(AcademicSummaryViewModel.class);
 
-        // Get student ID
+        // Get student ID from SharedPreferences (saved during login)
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        long studentId = prefs.getLong("student_id", 1);
+        long studentId = prefs.getLong("student_id", -1);
 
         // Load academic summary
         viewModel.loadAcademicSummary(studentId);
