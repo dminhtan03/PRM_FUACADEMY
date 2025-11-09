@@ -20,7 +20,11 @@ public class CourseViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Course>> getCourses() {
-        courseList.postValue(db.courseDao().getAll());
+        // Load all courses on background thread
+        new Thread(() -> {
+            List<Course> courses = db.courseDao().getAll();
+            courseList.postValue(courses);
+        }).start();
         return courseList;
     }
 

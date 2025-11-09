@@ -135,7 +135,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             "Exam Schedule",
             "Attendance Detail",
             "Academic Summary",
-            "Feedback Form"
+            "Feedback Form",
+            "Curriculum",
+            "Grade per Semester",
+            "Assignment List",
+            "Material List",
+            "Submission List"
         };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
@@ -172,6 +177,27 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                         break;
                     case "Feedback Form":
                         startActivity(new Intent(HomeActivity.this, FeedbackFormActivity.class));
+                        break;
+                    case "Curriculum":
+                        startActivity(new Intent(HomeActivity.this, CourseListActivity.class));
+                        break;
+                    case "Grade per Semester":
+                        startActivity(new Intent(HomeActivity.this, GradePerSemesterActivity.class));
+                        break;
+                    case "Assignment List":
+                        // Need course_id, for now open with default or show all
+                        Intent assignmentIntent = new Intent(HomeActivity.this, AssignmentListActivity.class);
+                        // You can pass course_id if available, or modify to show all assignments
+                        assignmentIntent.putExtra("course_id", -1); // -1 means show all
+                        startActivity(assignmentIntent);
+                        break;
+                    case "Material List":
+                        Intent materialIntent = new Intent(HomeActivity.this, MaterialListActivity.class);
+                        materialIntent.putExtra("course_id", -1); // -1 means show all
+                        startActivity(materialIntent);
+                        break;
+                    case "Submission List":
+                        startActivity(new Intent(HomeActivity.this, SubmissionListActivity.class));
                         break;
                 }
 
@@ -302,6 +328,24 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_courses) {
             Intent intent = new Intent(this, CourseListActivity.class);
+            startActivity(intent);
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (id == R.id.nav_grade_per_semester) {
+            Intent intent = new Intent(this, GradePerSemesterActivity.class);
+            startActivity(intent);
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (id == R.id.nav_assignment_list) {
+            Intent intent = new Intent(this, AssignmentListActivity.class);
+            intent.putExtra("course_id", -1);
+            startActivity(intent);
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (id == R.id.nav_material_list) {
+            Intent intent = new Intent(this, MaterialListActivity.class);
+            intent.putExtra("course_id", -1);
+            startActivity(intent);
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (id == R.id.nav_submission_list) {
+            Intent intent = new Intent(this, SubmissionListActivity.class);
             startActivity(intent);
             drawerLayout.closeDrawer(GravityCompat.START);
         } else if (id == R.id.nav_logout) {
