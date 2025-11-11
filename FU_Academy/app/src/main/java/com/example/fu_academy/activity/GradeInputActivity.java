@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,7 +22,7 @@ import com.example.fu_academy.viewmodel.GradeInputViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GradeInputActivity extends AppCompatActivity {
+public class GradeInputActivity extends BaseTeacherActivity {
 
     private GradeInputViewModel viewModel;
     private GradeInputAdapter adapter;

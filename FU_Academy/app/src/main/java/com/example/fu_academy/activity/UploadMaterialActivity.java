@@ -7,14 +7,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.fu_academy.R;
 import com.example.fu_academy.entity.Material;
 import com.example.fu_academy.viewmodel.UploadMaterialViewModel;
 
-public class UploadMaterialActivity extends AppCompatActivity {
+public class UploadMaterialActivity extends BaseTeacherActivity {
 
     private static final int PICK_FILE_REQUEST = 1;
 

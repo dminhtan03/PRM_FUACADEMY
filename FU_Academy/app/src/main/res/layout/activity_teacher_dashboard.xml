@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottom_navigation_container"
+        android:layout_marginBottom="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -300,179 +307,309 @@
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Quick Actions -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Quick Actions"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#2C3E50"
-            android:layout_marginBottom="16dp" />
+    </LinearLayout>
 
+    </ScrollView>
+
+    <!-- Bottom Tab Navigation -->
+    <LinearLayout
+        android:id="@+id/bottom_navigation_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:elevation="8dp">
+
+        <!-- Tab Content Area -->
+        <FrameLayout
+            android:id="@+id/tab_content"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="#FAFAFA"
+            android:padding="16dp">
+
+            <!-- Default content (My Classes) -->
+            <LinearLayout
+                android:id="@+id/content_my_classes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="visible">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_class"
+                    android:layout_marginBottom="12dp"
+                    android:contentDescription="My Classes Icon"
+                    app:tint="#3498DB" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="My Classes"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#2C3E50"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View and manage your classes"
+                    android:textSize="14sp"
+                    android:textColor="#7F8C8D"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
+            <!-- Attendance content -->
+            <LinearLayout
+                android:id="@+id/content_attendance"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_attendance"
+                    android:layout_marginBottom="12dp"
+                    android:contentDescription="Attendance Icon"
+                    app:tint="#2ECC71" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Take Attendance"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#2C3E50"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mark student attendance for classes"
+                    android:textSize="14sp"
+                    android:textColor="#7F8C8D"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
+            <!-- Grade content -->
+            <LinearLayout
+                android:id="@+id/content_grade"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_grade"
+                    android:layout_marginBottom="12dp"
+                    android:contentDescription="Grade Icon"
+                    app:tint="#E74C3C" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Grade Input"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#2C3E50"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Enter and manage student grades"
+                    android:textSize="14sp"
+                    android:textColor="#7F8C8D"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
+            <!-- Upload content -->
+            <LinearLayout
+                android:id="@+id/content_upload"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_upload"
+                    android:layout_marginBottom="12dp"
+                    android:contentDescription="Upload Icon"
+                    app:tint="#F39C12" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload Material"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#2C3E50"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload course materials and resources"
+                    android:textSize="14sp"
+                    android:textColor="#7F8C8D"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+        <!-- Bottom Tab Bar -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:orientation="horizontal"
-            android:layout_marginBottom="16dp">
+            android:background="@android:color/white"
+            android:elevation="4dp"
+            android:baselineAligned="false">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_my_classes"
+            <LinearLayout
+                android:id="@+id/tab_my_classes"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp"
                 android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="16dp">
+                <ImageView
+                    android:id="@+id/icon_my_classes"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_class"
+                    android:contentDescription="Classes Tab"
+                    app:tint="#3498DB" />
 
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_class"
-                        android:layout_marginBottom="8dp" />
+                <TextView
+                    android:id="@+id/label_my_classes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Classes"
+                    android:textSize="10sp"
+                    android:textColor="#3498DB"
+                    android:layout_marginTop="2dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="My Classes"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#2C3E50"
-                        android:gravity="center" />
+            </LinearLayout>
 
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_take_attendance"
+            <LinearLayout
+                android:id="@+id/tab_attendance"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp"
                 android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="16dp">
+                <ImageView
+                    android:id="@+id/icon_attendance"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_attendance"
+                    android:contentDescription="Attendance Tab"
+                    app:tint="#7F8C8D" />
 
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_attendance"
-                        android:layout_marginBottom="8dp" />
+                <TextView
+                    android:id="@+id/label_attendance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Attendance"
+                    android:textSize="10sp"
+                    android:textColor="#7F8C8D"
+                    android:layout_marginTop="2dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Take Attendance"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#2C3E50"
-                        android:gravity="center" />
+            </LinearLayout>
 
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_grade_input"
+            <LinearLayout
+                android:id="@+id/tab_grade"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp"
                 android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="16dp">
+                <ImageView
+                    android:id="@+id/icon_grade"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_grade"
+                    android:contentDescription="Grades Tab"
+                    app:tint="#7F8C8D" />
 
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_grade"
-                        android:layout_marginBottom="8dp" />
+                <TextView
+                    android:id="@+id/label_grade"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Grades"
+                    android:textSize="10sp"
+                    android:textColor="#7F8C8D"
+                    android:layout_marginTop="2dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Grade Input"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#2C3E50"
-                        android:gravity="center" />
+            </LinearLayout>
 
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/card_upload_material"
+            <LinearLayout
+                android:id="@+id/tab_upload"
                 android:layout_width="0dp"
-                android:layout_height="120dp"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_margin="8dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp"
                 android:clickable="true"
-                android:foreground="?android:attr/selectableItemBackground">
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="16dp">
+                <ImageView
+                    android:id="@+id/icon_upload"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_upload"
+                    android:contentDescription="Upload Tab"
+                    app:tint="#7F8C8D" />
 
-                    <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:src="@drawable/ic_upload"
-                        android:layout_marginBottom="8dp" />
+                <TextView
+                    android:id="@+id/label_upload"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload"
+                    android:textSize="10sp"
+                    android:textColor="#7F8C8D"
+                    android:layout_marginTop="2dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Upload Material"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:textColor="#2C3E50"
-                        android:gravity="center" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
 
-</ScrollView>
+</RelativeLayout>

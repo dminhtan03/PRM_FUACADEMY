@@ -2,11 +2,10 @@ package com.example.fu_academy.activity;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AttendanceSheetActivity extends AppCompatActivity {
+public class AttendanceSheetActivity extends BaseTeacherActivity {
 
     private TeacherDashboardViewModel teacherViewModel;
     private AttendanceViewModel attendanceViewModel;
