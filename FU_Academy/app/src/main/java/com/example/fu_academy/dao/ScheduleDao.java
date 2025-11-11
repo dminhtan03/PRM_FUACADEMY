@@ -25,4 +25,13 @@ public interface ScheduleDao {
 
     @Query("SELECT * FROM Schedule")
     List<Schedule> getAll();
+
+    @Query("SELECT s.*, c.room as class_room, co.name as course_name " +
+           "FROM Schedule s " +
+           "INNER JOIN Class c ON s.class_id = c.class_id " +
+           "INNER JOIN Course co ON c.course_id = co.course_id " +
+           "WHERE c.lecturer_id = :lecturerId AND s.date >= date('now') " +
+           "ORDER BY s.date, s.time " +
+           "LIMIT 5")
+    List<Schedule> getUpcomingByLecturer(long lecturerId);
 }

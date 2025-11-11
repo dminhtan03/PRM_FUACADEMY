@@ -47,6 +47,9 @@ public class Enrollment {
     @ColumnInfo(name = "status")
     public String status; // "Pass" or "Fail"
 
+    @ColumnInfo(name = "remark")
+    public String remark;
+
     public Enrollment() {
     }
 

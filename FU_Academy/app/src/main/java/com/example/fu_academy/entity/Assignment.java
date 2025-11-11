@@ -6,12 +6,16 @@ import androidx.room.ForeignKey;
 import androidx.room.ColumnInfo;
 
 @Entity(tableName = "Assignment",
-        foreignKeys = @ForeignKey(
-                entity = Course.class,
-                parentColumns = "course_id",
-                childColumns = "course_id",
-                onDelete = ForeignKey.CASCADE
-        ))
+        foreignKeys = {
+                @ForeignKey(entity = Course.class,
+                        parentColumns = "course_id",
+                        childColumns = "course_id",
+                        onDelete = ForeignKey.CASCADE),
+                @ForeignKey(entity = Class.class,
+                        parentColumns = "class_id",
+                        childColumns = "class_id",
+                        onDelete = ForeignKey.CASCADE)
+        })
 public class Assignment {
     @PrimaryKey(autoGenerate = true)
     public long assignment_id;
@@ -19,11 +23,17 @@ public class Assignment {
     @ColumnInfo(name = "course_id", index = true)
     public long course_id;
 
+    @ColumnInfo(name = "class_id", index = true)
+    public long class_id;
+
     @ColumnInfo(name = "title")
     public String title;
 
     @ColumnInfo(name = "deadline")
     public String deadline;
+
+    @ColumnInfo(name = "due_date")
+    public String due_date;
 
     @ColumnInfo(name = "description")
     public String description;

@@ -25,4 +25,14 @@ public interface ClassDao {
 
     @Query("SELECT * FROM Class WHERE course_id = :courseId")
     List<Class> getByCourse(long courseId);
+
+    @Query("SELECT * FROM Class WHERE lecturer_id = :lecturerId")
+    List<Class> getByLecturer(long lecturerId);
+
+    @Query("SELECT c.*, co.name as course_name, co.course_code " +
+           "FROM Class c " +
+           "INNER JOIN Course co ON c.course_id = co.course_id " +
+           "WHERE c.lecturer_id = :lecturerId " +
+           "ORDER BY c.semester DESC")
+    List<Class> getClassesWithCourseByLecturer(long lecturerId);
 }

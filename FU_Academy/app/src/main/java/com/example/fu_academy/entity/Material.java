@@ -6,12 +6,16 @@ import androidx.room.ForeignKey;
 import androidx.room.ColumnInfo;
 
 @Entity(tableName = "Material",
-        foreignKeys = @ForeignKey(
-                entity = Course.class,
-                parentColumns = "course_id",
-                childColumns = "course_id",
-                onDelete = ForeignKey.CASCADE
-        ))
+        foreignKeys = {
+                @ForeignKey(entity = Course.class,
+                        parentColumns = "course_id",
+                        childColumns = "course_id",
+                        onDelete = ForeignKey.CASCADE),
+                @ForeignKey(entity = Class.class,
+                        parentColumns = "class_id",
+                        childColumns = "class_id",
+                        onDelete = ForeignKey.CASCADE)
+        })
 public class Material {
     @PrimaryKey(autoGenerate = true)
     public long material_id;
@@ -19,14 +23,23 @@ public class Material {
     @ColumnInfo(name = "course_id", index = true)
     public long course_id;
 
+    @ColumnInfo(name = "class_id", index = true)
+    public long class_id;
+
     @ColumnInfo(name = "title")
     public String title;
 
     @ColumnInfo(name = "file_url")
     public String file_url;
 
+    @ColumnInfo(name = "file_name")
+    public String file_name;
+
     @ColumnInfo(name = "upload_date")
     public String upload_date;
+
+    @ColumnInfo(name = "file_type")
+    public String file_type;
 
     @ColumnInfo(name = "type")
     public String type; // "PDF", "Video", "Document", etc.
@@ -121,5 +134,29 @@ public class Material {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public long getClass_id() {
+        return class_id;
+    }
+
+    public void setClass_id(long class_id) {
+        this.class_id = class_id;
+    }
+
+    public String getFile_name() {
+        return file_name;
+    }
+
+    public void setFile_name(String file_name) {
+        this.file_name = file_name;
+    }
+
+    public String getFile_type() {
+        return file_type;
+    }
+
+    public void setFile_type(String file_type) {
+        this.file_type = file_type;
     }
 }

@@ -31,6 +31,21 @@ public interface AttendanceDetailDao {
 
     @Query("SELECT COUNT(*) FROM AttendanceDetail WHERE student_id = :studentId")
     int getTotalCount(long studentId);
+
+    @Query("SELECT AVG(CASE WHEN a.status = 'present' THEN 1.0 ELSE 0.0 END) * 100 " +
+           "FROM AttendanceDetail a " +
+           "INNER JOIN Schedule s ON a.schedule_id = s.id " +
+           "INNER JOIN Class c ON s.class_id = c.class_id " +
+           "WHERE c.lecturer_id = :lecturerId")
+    Double getAttendanceRateByLecturer(long lecturerId);
+
+    @Query("SELECT a.*, u.name as student_name " +
+           "FROM AttendanceDetail a " +
+           "INNER JOIN User u ON a.student_id = u.user_id " +
+           "INNER JOIN Schedule s ON a.schedule_id = s.id " +
+           "WHERE s.class_id = :classId AND a.date = :date " +
+           "ORDER BY u.name")
+    List<AttendanceDetail> getByClassAndDate(long classId, String date);
 }
 
 

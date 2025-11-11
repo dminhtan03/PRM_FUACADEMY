@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Student Info -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_student_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Student Name"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="#2C3E50" />
+
+                <TextView
+                    android:id="@+id/tv_file_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="assignment.pdf"
+                    android:textSize="12sp"
+                    android:textColor="#7F8C8D" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_submit_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2023-11-10"
+                android:textSize="12sp"
+                android:textColor="#7F8C8D"
+                android:gravity="end" />
+
+        </LinearLayout>
+
+        <!-- Grade Input -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Grade: "
+                android:textSize="14sp"
+                android:textColor="#2C3E50"
+                android:layout_gravity="center_vertical" />
+
+            <EditText
+                android:id="@+id/et_grade"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:hint="0.0"
+                android:inputType="numberDecimal"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:layout_marginStart="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" / 10"
+                android:textSize="14sp"
+                android:textColor="#7F8C8D"
+                android:layout_gravity="center_vertical" />
+
+        </LinearLayout>
+
+        <!-- Feedback Input -->
+        <EditText
+            android:id="@+id/et_feedback"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Feedback (Optional)"
+            android:inputType="textMultiLine"
+            android:lines="2"
+            android:textSize="14sp"
+            android:background="@drawable/edit_text_background"
+            android:padding="12dp" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

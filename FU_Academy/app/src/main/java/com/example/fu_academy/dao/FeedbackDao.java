@@ -19,4 +19,17 @@ public interface FeedbackDao {
 
     @Query("SELECT * FROM Feedback WHERE student_id = :studentId ORDER BY date DESC")
     List<Feedback> getByStudent(long studentId);
+
+    @Query("SELECT f.* FROM Feedback f " +
+           "INNER JOIN Enrollment e ON f.student_id = e.student_id " +
+           "INNER JOIN Class c ON e.class_id = c.class_id " +
+           "WHERE c.lecturer_id = :lecturerId " +
+           "ORDER BY f.date DESC")
+    List<Feedback> getByLecturer(long lecturerId);
+
+    @Query("SELECT COUNT(*) FROM Feedback f " +
+           "INNER JOIN Enrollment e ON f.student_id = e.student_id " +
+           "INNER JOIN Class c ON e.class_id = c.class_id " +
+           "WHERE c.lecturer_id = :lecturerId")
+    int countByLecturer(long lecturerId);
 }

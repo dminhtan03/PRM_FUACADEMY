@@ -44,6 +44,12 @@
         <activity android:name=".activity.MaterialListActivity" />
         <activity android:name=".activity.MaterialDetailActivity" />
         <activity android:name=".activity.SubmissionListActivity" />
+        <activity android:name=".activity.TeacherDashboardActivity" />
+        <activity android:name=".activity.MyClassesActivity" />
+        <activity android:name=".activity.StudentListActivity" />
+        <activity android:name=".activity.AttendanceSheetActivity" />
+        <activity android:name=".activity.GradeInputActivity" />
+        <activity android:name=".activity.UploadMaterialActivity" />
     </application>
 
 </manifest>

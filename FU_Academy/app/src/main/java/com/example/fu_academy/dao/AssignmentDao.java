@@ -19,4 +19,7 @@ public interface AssignmentDao {
 
     @Update
     void update(Assignment assignment);
+
+    @Query("SELECT * FROM Assignment WHERE class_id = :classId ORDER BY due_date DESC")
+    List<Assignment> getByClass(long classId);
 }

@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.fu_academy.R;
 import com.example.fu_academy.entity.User;
 import com.example.fu_academy.helper.SharedPreferencesHelper;
+import com.example.fu_academy.activity.TeacherDashboardActivity;
 import com.example.fu_academy.viewmodel.UserViewModel;
 import com.example.fu_academy.viewmodel.StudentDashboardViewModel;
 import com.google.android.material.navigation.NavigationView;
@@ -90,14 +91,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 updateWelcomeMessage(user);
                 updateNavigationHeader(user);
                 
-                // Load dashboard data if user is a student
+                // Redirect based on user role
                 if ("student".equalsIgnoreCase(user.role)) {
                     if (dashboardContainer != null) {
                         dashboardContainer.setVisibility(View.VISIBLE);
                     }
                     loadDashboardData();
+                } else if ("lecturer".equalsIgnoreCase(user.role)) {
+                    // Redirect lecturer to Teacher Dashboard
+                    Intent intent = new Intent(HomeActivity.this, TeacherDashboardActivity.class);
+                    startActivity(intent);
+//                    finish();
                 } else {
-                    // Hide dashboard for non-students
+                    // Hide dashboard for other roles
                     if (dashboardContainer != null) {
                         dashboardContainer.setVisibility(View.GONE);
                     }

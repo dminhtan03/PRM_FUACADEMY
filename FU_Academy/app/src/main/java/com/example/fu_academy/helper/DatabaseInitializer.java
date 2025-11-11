@@ -214,13 +214,16 @@ public class DatabaseInitializer {
             enrollment1.average_score = 8.25;
             enrollment1.status = "Pass";
             enrollment1.attendance = 85;
+            enrollment1.remark = "Học sinh chăm chỉ, tích cực tham gia";
             enrollmentDao.insert(enrollment1);
 
             // Assignment 1 for Course 1
             Assignment assignment1 = new Assignment();
             assignment1.course_id = course1Id;
+            assignment1.class_id = class1Id;
             assignment1.title = "Bài tập Java - OOP";
             assignment1.deadline = "2024-12-15";
+            assignment1.due_date = "2024-12-15";
             assignment1.description = "Viết chương trình quản lý sinh viên sử dụng OOP";
             assignment1.status = "Đã nộp";
             assignment1.grade = 8.5;
@@ -246,10 +249,13 @@ public class DatabaseInitializer {
             // Material 1 for Course 1
             Material material1 = new Material();
             material1.course_id = course1Id;
+            material1.class_id = class1Id;
             material1.title = "Slide bài giảng Java OOP";
             material1.file_url = "/materials/java_oop_slide.pdf";
+            material1.file_name = "java_oop_slide.pdf";
             material1.upload_date = "2024-09-01";
             material1.type = "PDF";
+            material1.file_type = "pdf";
             material1.file_size = "5.2 MB";
             material1.owner_id = lecturer1.user_id;
             material1.description = "Slide bài giảng về lập trình hướng đối tượng trong Java";
@@ -286,13 +292,16 @@ public class DatabaseInitializer {
             enrollment2.average_score = 8.75;
             enrollment2.status = "Pass";
             enrollment2.attendance = 90;
+            enrollment2.remark = "Xuất sắc, hiểu bài rất tốt";
             enrollmentDao.insert(enrollment2);
 
             // Assignment 2 for Course 2
             Assignment assignment2 = new Assignment();
             assignment2.course_id = course2Id;
+            assignment2.class_id = class2Id;
             assignment2.title = "Thiết kế Database cho hệ thống quản lý";
             assignment2.deadline = "2024-12-20";
+            assignment2.due_date = "2024-12-20";
             assignment2.description = "Thiết kế database và viết các câu query SQL";
             assignment2.status = "Chưa nộp";
             assignment2.grade = null;
@@ -305,10 +314,13 @@ public class DatabaseInitializer {
             // Material 2 for Course 2
             Material material2 = new Material();
             material2.course_id = course2Id;
+            material2.class_id = class2Id;
             material2.title = "Video bài giảng SQL cơ bản";
             material2.file_url = "/materials/sql_basic_video.mp4";
+            material2.file_name = "sql_basic_video.mp4";
             material2.upload_date = "2024-09-05";
             material2.type = "Video";
+            material2.file_type = "mp4";
             material2.file_size = "125 MB";
             material2.owner_id = lecturer2.user_id;
             material2.description = "Video hướng dẫn SQL cơ bản";
@@ -345,13 +357,16 @@ public class DatabaseInitializer {
             enrollment3.average_score = 7.5;
             enrollment3.status = "Pass";
             enrollment3.attendance = 75;
+            enrollment3.remark = "Cần cải thiện việc tham gia lớp";
             enrollmentDao.insert(enrollment3);
 
             // Assignment 3 for Course 3
             Assignment assignment3 = new Assignment();
             assignment3.course_id = course3Id;
+            assignment3.class_id = class3Id;
             assignment3.title = "Bài tập về mô hình OSI";
             assignment3.deadline = "2024-11-30";
+            assignment3.due_date = "2024-11-30";
             assignment3.description = "Phân tích và giải thích mô hình OSI";
             assignment3.status = "Đã nộp";
             assignment3.grade = 7.5;
@@ -377,10 +392,13 @@ public class DatabaseInitializer {
             // Material 3 for Course 3
             Material material3 = new Material();
             material3.course_id = course3Id;
+            material3.class_id = class3Id;
             material3.title = "Tài liệu tham khảo về TCP/IP";
             material3.file_url = "/materials/tcpip_reference.pdf";
+            material3.file_name = "tcpip_reference.pdf";
             material3.upload_date = "2024-09-10";
             material3.type = "PDF";
+            material3.file_type = "pdf";
             material3.file_size = "8.5 MB";
             material3.owner_id = lecturer1.user_id;
             material3.description = "Tài liệu tham khảo chi tiết về giao thức TCP/IP";
@@ -398,6 +416,7 @@ public class DatabaseInitializer {
                 enrollment4.average_score = 7.75;
                 enrollment4.status = "Pass";
                 enrollment4.attendance = 80;
+                enrollment4.remark = "Học tập tốt, cần tích cực hơn";
                 enrollmentDao.insert(enrollment4);
             }
 
@@ -412,6 +431,7 @@ public class DatabaseInitializer {
                 enrollment5.average_score = 9.25;
                 enrollment5.status = "Pass";
                 enrollment5.attendance = 95;
+                enrollment5.remark = "Xuất sắc, học sinh giỏi";
                 enrollmentDao.insert(enrollment5);
             }
 
@@ -507,8 +527,10 @@ public class DatabaseInitializer {
                 if (Math.random() > 0.3) {
                     Assignment assignment = new Assignment();
                     assignment.course_id = courseId;
+                    assignment.class_id = classId;
                     assignment.title = "Bài tập " + courseData[1];
                     assignment.deadline = "2024-12-25";
+                    assignment.due_date = "2024-12-25";
                     assignment.description = "Bài tập về " + courseData[1];
                     assignment.status = Math.random() > 0.5 ? "Đã nộp" : "Chưa nộp";
                     assignment.grade = assignment.status.equals("Đã nộp") ? 7.0 + Math.random() * 2.5 : null;
@@ -523,10 +545,15 @@ public class DatabaseInitializer {
                 if (Math.random() > 0.4) {
                     Material material = new Material();
                     material.course_id = courseId;
+                    material.class_id = classId;
                     material.title = "Tài liệu " + courseData[1];
-                    material.file_url = "/materials/" + courseData[0].toLowerCase() + ".pdf";
+                    String fileType = Math.random() > 0.5 ? "pdf" : "mp4";
+                    String fileName = courseData[0].toLowerCase() + "." + fileType;
+                    material.file_url = "/materials/" + fileName;
+                    material.file_name = fileName;
                     material.upload_date = "2024-09-01";
-                    material.type = Math.random() > 0.5 ? "PDF" : "Video";
+                    material.type = fileType.equals("pdf") ? "PDF" : "Video";
+                    material.file_type = fileType;
                     material.file_size = String.format("%.1f MB", 1.0 + Math.random() * 10);
                     material.owner_id = course.lecturer_id;
                     material.description = "Tài liệu tham khảo cho " + courseData[1];
