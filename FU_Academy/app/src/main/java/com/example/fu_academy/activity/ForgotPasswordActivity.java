@@ -62,43 +62,30 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         });
 
         otpViewModel.otpStatus.observe(this, status -> {
-            if (status != null) {
-                switch (status) {
-                    case "success":
-                        txtStatus.setText("Đã gửi");
-                        txtStatus.setVisibility(View.VISIBLE);
-                        txtMsg.setText(otpViewModel.otpMessage.getValue());
-                        txtMsg.setVisibility(View.VISIBLE);
-                        edtOTP.setVisibility(View.VISIBLE);
-                        btnConfirm.setVisibility(View.VISIBLE);
-                        // For demo purposes, show OTP code
-                        otpViewModel.otpCode.observe(this, code -> {
-                            if (code != null) {
-                                txtCode.setText("Mã OTP: " + code);
-                                txtCode.setVisibility(View.VISIBLE);
-                            }
-                        });
-                        break;
-                    case "error":
-                        txtStatus.setText("Lỗi");
-                        txtStatus.setVisibility(View.VISIBLE);
-                        txtMsg.setText(otpViewModel.otpMessage.getValue());
-                        txtMsg.setVisibility(View.VISIBLE);
-                        btnSend.setEnabled(true);
-                        break;
-                }
+            if (status == null) return;
+            if ("success".equals(status)) {
+                txtStatus.setText("Đã gửi");
+                txtStatus.setVisibility(View.VISIBLE);
+                txtMsg.setText(otpViewModel.otpMessage.getValue());
+                txtMsg.setVisibility(View.VISIBLE);
+                // Điều hướng sang VerifyOTPActivity
+                android.content.Intent intent = new android.content.Intent(this, VerifyOTPActivity.class);
+                intent.putExtra("email", currentEmail);
+                startActivity(intent);
+                finish();
+            } else if ("error".equals(status)) {
+                txtStatus.setText("Lỗi");
+                txtStatus.setVisibility(View.VISIBLE);
+                txtMsg.setText(otpViewModel.otpMessage.getValue());
+                txtMsg.setVisibility(View.VISIBLE);
+                btnSend.setEnabled(true);
             }
         });
 
-        btnConfirm.setOnClickListener(v -> {
-            String code = edtOTP.getText().toString().trim();
-            if (code.isEmpty()) {
-                txtMsg.setText("Vui lòng nhập mã OTP");
-                txtMsg.setVisibility(View.VISIBLE);
-                return;
-            }
-            otpViewModel.verifyOTP(currentEmail, code);
-        });
+        // Ẩn các control nhập OTP tại màn này (sẽ nhập ở VerifyOTPActivity)
+        edtOTP.setVisibility(View.GONE);
+        btnConfirm.setVisibility(View.GONE);
+        txtCode.setVisibility(View.GONE);
 
         otpViewModel.otpVerified.observe(this, verified -> {
             if (verified != null) {
@@ -119,7 +106,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     private void startTimer() {
-        countDownTimer = new CountDownTimer(300000, 1000) { // 5 minutes
+        countDownTimer = new CountDownTimer(180000, 1000) { // 3 minutes
             @Override
             public void onTick(long millisUntilFinished) {
                 long seconds = millisUntilFinished / 1000;

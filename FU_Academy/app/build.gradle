@@ -16,6 +16,20 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    packaging {
+        resources {
+            excludes += [
+                    "META-INF/NOTICE",
+                    "META-INF/NOTICE.txt",
+                    "META-INF/NOTICE.md",
+                    "META-INF/LICENSE",
+                    "META-INF/LICENSE.txt",
+                    "META-INF/LICENSE.md",
+                    "META-INF/DEPENDENCIES"
+            ]
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -44,4 +58,7 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:2.6.1"
     implementation 'com.squareup.picasso:picasso:2.8'
     androidTestImplementation "androidx.room:room-testing:2.6.1"
+    // Email (JavaMail for Android)
+    implementation 'com.sun.mail:android-mail:1.6.7'
+    implementation 'com.sun.mail:android-activation:1.6.7'
 }
