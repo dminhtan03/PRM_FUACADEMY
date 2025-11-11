@@ -43,6 +43,12 @@ public class StudentListActivity extends AppCompatActivity implements StudentLis
     private void initViews() {
         recyclerView = findViewById(R.id.recycler_view_students);
         tvClassName = findViewById(R.id.tv_class_name);
+        
+        // Setup back button
+        android.widget.ImageButton btnBack = findViewById(R.id.btn_back);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
         if (className != null) {
             tvClassName.setText(className);
@@ -75,13 +81,6 @@ public class StudentListActivity extends AppCompatActivity implements StudentLis
         if (studentList != null) {
             adapter.updateList(studentList);
         }
-    }
-
-    @Override
-    public void onStudentClick(StudentInfo studentInfo) {
-        Intent intent = new Intent(this, ProfileOverviewActivity.class);
-        intent.putExtra("user_id", studentInfo.getStudentId());
-        startActivity(intent);
     }
 
     @Override

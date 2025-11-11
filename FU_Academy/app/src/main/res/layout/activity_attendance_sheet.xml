@@ -17,66 +17,113 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardElevation="4dp"
-        app:cardCornerRadius="0dp">
+        app:cardCornerRadius="0dp"
+        app:cardBackgroundColor="@android:color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
             android:background="@android:color/white">
 
-            <TextView
+            <!-- Top Section: Back Button + Title -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Attendance Sheet"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="#2C3E50"
-                android:gravity="center" />
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:gravity="center_vertical"
+                android:background="@android:color/white">
 
-            <TextView
-                android:id="@+id/tv_class_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Class Name"
-                android:textSize="16sp"
-                android:textColor="#7F8C8D"
-                android:gravity="center"
-                android:layout_marginTop="4dp" />
+                <ImageButton
+                    android:id="@+id/btn_back"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Back"
+                    android:src="@android:drawable/ic_menu_revert"
+                    app:tint="#2C3E50" />
 
-            <!-- Date Selection -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Attendance Sheet"
+                        android:textColor="#2C3E50"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.05" />
+
+                    <TextView
+                        android:id="@+id/tv_class_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Class Name"
+                        android:textColor="#7F8C8D"
+                        android:textSize="14sp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Date Selection Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginTop="16dp">
+                android:padding="16dp"
+                android:paddingTop="8dp"
+                android:background="#F8F9FA">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Date: "
-                    android:textSize="16sp"
-                    android:textColor="#2C3E50" />
-
-                <TextView
-                    android:id="@+id/tv_selected_date"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="2023-11-11"
-                    android:textSize="16sp"
-                    android:textColor="#3498DB"
-                    android:textStyle="bold" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Date"
+                        android:textSize="12sp"
+                        android:textColor="#7F8C8D"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:id="@+id/tv_selected_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="2023-11-12"
+                        android:textSize="18sp"
+                        android:textColor="#3498DB"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
 
                 <Button
                     android:id="@+id/btn_select_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:minWidth="120dp"
+                    android:minHeight="48dp"
+                    android:backgroundTint="#3498DB"
                     android:text="Change Date"
-                    android:textSize="12sp"
-                    android:backgroundTint="#3498DB" />
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:drawableEnd="@android:drawable/arrow_down_float"
+                    android:drawablePadding="8dp" />
 
             </LinearLayout>
 
@@ -90,20 +137,33 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="8dp"
-        android:clipToPadding="false" />
+        android:clipToPadding="false"
+        android:padding="12dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:scrollbars="vertical" />
 
     <!-- Save Button -->
-    <Button
-        android:id="@+id/btn_save_attendance"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Save Attendance"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:backgroundTint="#2ECC71"
-        android:textColor="@android:color/white" />
+        app:cardElevation="0dp"
+        app:cardCornerRadius="0dp"
+        app:cardBackgroundColor="@android:color/white">
+
+        <Button
+            android:id="@+id/btn_save_attendance"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_margin="16dp"
+            android:text="Save Attendance"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:backgroundTint="#2ECC71"
+            android:textColor="@android:color/white"
+            android:letterSpacing="0.05" />
+
+    </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 

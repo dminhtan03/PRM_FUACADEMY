@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.fu_academy.database.EducationDatabase;
 import com.example.fu_academy.entity.AttendanceDetail;
+import com.example.fu_academy.entity.Schedule;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -44,21 +45,58 @@ public class AttendanceViewModel extends AndroidViewModel {
         return attendanceList;
     }
 
-    public void saveAttendance(List<AttendanceDetail> attendanceDetails) {
+    public void saveAttendance(List<AttendanceDetail> attendanceDetails, long classId, String date) {
         isLoading.postValue(true);
 
         executorService.execute(() -> {
             try {
+                // Find or create Schedule for this class and date
+                List<Schedule> schedules = database.scheduleDao().getByClass(classId);
+                Schedule schedule = null;
+                
+                // Try to find existing schedule for this date
+                for (Schedule s : schedules) {
+                    if (date.equals(s.date)) {
+                        schedule = s;
+                        break;
+                    }
+                }
+                
+                // If no schedule exists, create one
+                if (schedule == null) {
+                    schedule = new Schedule();
+                    schedule.class_id = classId;
+                    schedule.date = date;
+                    schedule.time = "08:00"; // Default time
+                    schedule.room = ""; // Will be set from Class if needed
+                    schedule.type = "lecture";
+                    schedule.status = "scheduled";
+                    schedule.id = database.scheduleDao().insert(schedule);
+                }
+                
+                final long scheduleId = schedule.id;
+
                 for (AttendanceDetail attendance : attendanceDetails) {
-                    // Check if attendance already exists for this student and date
+                    attendance.schedule_id = scheduleId;
+                    
+                    // Check if attendance already exists for this student, schedule and date
                     List<AttendanceDetail> existing = database.attendanceDetailDao()
                         .getByStudentAndDate(attendance.student_id, attendance.date);
+                    
+                    // Filter by schedule_id
+                    AttendanceDetail existingForSchedule = null;
+                    for (AttendanceDetail e : existing) {
+                        if (e.schedule_id == scheduleId) {
+                            existingForSchedule = e;
+                            break;
+                        }
+                    }
 
-                    if (existing.isEmpty()) {
+                    if (existingForSchedule == null) {
                         database.attendanceDetailDao().insert(attendance);
                     } else {
                         // Update existing attendance
-                        attendance.attendance_id = existing.get(0).attendance_id;
+                        attendance.attendance_id = existingForSchedule.attendance_id;
                         database.attendanceDetailDao().update(attendance);
                     }
                 }

@@ -43,7 +43,7 @@ import com.example.fu_academy.entity.OTP;
                 Exam.class, AttendanceDetail.class,
                 Feedback.class, OTP.class
         },
-        version = 8,
+        version = 9,
         exportSchema = false
 )
 public abstract class EducationDatabase extends RoomDatabase {

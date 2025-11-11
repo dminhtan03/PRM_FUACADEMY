@@ -4,8 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,19 +19,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="16dp"
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/tv_class_code"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="CL001"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="#2C3E50"
-                android:background="#E8F4FD"
-                android:padding="6dp"
-                android:layout_marginEnd="12dp" />
+                android:textColor="#FFFFFF"
+                android:background="#3498DB"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:layout_marginEnd="16dp"
+                android:minWidth="60dp"
+                android:gravity="center"
+                android:letterSpacing="0.05" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -43,145 +49,187 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Course Name"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#2C3E50" />
+                    android:textColor="#2C3E50"
+                    android:maxLines="2"
+                    android:ellipsize="end" />
 
                 <TextView
                     android:id="@+id/tv_semester"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Fall 2023"
-                    android:textSize="12sp"
-                    android:textColor="#7F8C8D" />
+                    android:textSize="13sp"
+                    android:textColor="#7F8C8D"
+                    android:layout_marginTop="4dp" />
 
             </LinearLayout>
 
         </LinearLayout>
 
         <!-- Class Details -->
-        <LinearLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="#F8F9FA"
+            android:layout_marginBottom="16dp">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:padding="12dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Room"
-                    android:textSize="12sp"
-                    android:textColor="#7F8C8D" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
 
-                <TextView
-                    android:id="@+id/tv_room"
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Room"
+                        android:textSize="11sp"
+                        android:textColor="#7F8C8D"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_room"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="A101"
+                        android:textSize="16sp"
+                        android:textColor="#2C3E50"
+                        android:textStyle="bold"
+                        android:layout_marginTop="4dp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#E0E0E0"
+                    android:layout_marginHorizontal="8dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="A101"
-                    android:textSize="14sp"
-                    android:textColor="#2C3E50" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Schedule"
+                        android:textSize="11sp"
+                        android:textColor="#7F8C8D"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_schedule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mon 08:00"
+                        android:textSize="14sp"
+                        android:textColor="#2C3E50"
+                        android:textStyle="bold"
+                        android:layout_marginTop="4dp"
+                        android:maxLines="2"
+                        android:gravity="center" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#E0E0E0"
+                    android:layout_marginHorizontal="8dp" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Students"
+                        android:textSize="11sp"
+                        android:textColor="#7F8C8D"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_student_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="25"
+                        android:textSize="16sp"
+                        android:textColor="#2ECC71"
+                        android:textStyle="bold"
+                        android:layout_marginTop="4dp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Schedule"
-                    android:textSize="12sp"
-                    android:textColor="#7F8C8D" />
-
-                <TextView
-                    android:id="@+id/tv_schedule"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Mon 08:00"
-                    android:textSize="14sp"
-                    android:textColor="#2C3E50" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Students"
-                    android:textSize="12sp"
-                    android:textColor="#7F8C8D" />
-
-                <TextView
-                    android:id="@+id/tv_student_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="25"
-                    android:textSize="14sp"
-                    android:textColor="#2C3E50" />
-
-            </LinearLayout>
-
-        </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="end">
+            android:gravity="center"
+            android:weightSum="3">
 
             <Button
                 android:id="@+id/btn_view_students"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Students"
-                android:textSize="12sp"
+                android:textSize="11sp"
+                android:textStyle="bold"
                 android:backgroundTint="#3498DB"
-                android:layout_marginEnd="8dp"
-                style="?attr/materialButtonOutlinedStyle" />
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="6dp"
+                android:padding="8dp"
+                android:minHeight="40dp" />
 
             <Button
                 android:id="@+id/btn_attendance"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Attendance"
-                android:textSize="12sp"
+                android:textSize="11sp"
+                android:textStyle="bold"
                 android:backgroundTint="#2ECC71"
-                android:layout_marginEnd="8dp"
-                style="?attr/materialButtonOutlinedStyle" />
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="6dp"
+                android:padding="8dp"
+                android:minHeight="40dp" />
 
             <Button
                 android:id="@+id/btn_grades"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Grades"
-                android:textSize="12sp"
+                android:textSize="11sp"
+                android:textStyle="bold"
                 android:backgroundTint="#F39C12"
-                android:layout_marginEnd="8dp"
-                style="?attr/materialButtonOutlinedStyle" />
-
-            <Button
-                android:id="@+id/btn_materials"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Materials"
-                android:textSize="12sp"
-                android:backgroundTint="#9B59B6"
-                style="?attr/materialButtonOutlinedStyle" />
+                android:textColor="@android:color/white"
+                android:padding="8dp"
+                android:minHeight="40dp" />
 
         </LinearLayout>
 

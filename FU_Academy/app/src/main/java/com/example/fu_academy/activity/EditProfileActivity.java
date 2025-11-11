@@ -60,7 +60,11 @@ public class EditProfileActivity extends AppCompatActivity {
         prefsHelper = new SharedPreferencesHelper(this);
         userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
 
-        long userId = prefsHelper.getUserId();
+        // Get user ID from intent or shared preferences
+        long userId = getIntent().getLongExtra("user_id", -1);
+        if (userId == -1) {
+            userId = prefsHelper.getUserId();
+        }
         if (userId > 0) {
             userViewModel.getUserById(userId);
         }
@@ -86,8 +90,17 @@ public class EditProfileActivity extends AppCompatActivity {
         userViewModel.updateProfileResult.observe(this, success -> {
             if (success != null && success) {
                 Toast.makeText(this, "Cập nhật hồ sơ thành công!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(this, HomeActivity.class);
-                startActivity(intent);
+                
+                // Check if user is lecturer, if so return to SettingsActivity
+                if (currentUser != null && "lecturer".equalsIgnoreCase(currentUser.role)) {
+                    Intent intent = new Intent(this, SettingsActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                    startActivity(intent);
+                } else {
+                    // For students, go to HomeActivity
+                    Intent intent = new Intent(this, HomeActivity.class);
+                    startActivity(intent);
+                }
                 finish();
             }
         });

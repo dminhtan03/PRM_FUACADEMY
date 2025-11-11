@@ -81,5 +81,10 @@ public class SharedPreferencesHelper {
             editor.apply();
         }
     }
+
+    public void clearUserData() {
+        editor.clear();
+        editor.apply();
+    }
 }
 

@@ -73,6 +73,23 @@ public class GradeInputViewModel extends AndroidViewModel {
         executorService.execute(() -> {
             try {
                 List<Submission> submissions = database.submissionDao().getByAssignment(assignmentId);
+                
+                // Auto-grade 2-3 submissions with default scores if they don't have grades
+                if (submissions != null && !submissions.isEmpty()) {
+                    int countToGrade = Math.min(2 + (int)(Math.random() * 2), submissions.size()); // 2-3 submissions
+                    int gradedCount = 0;
+                    
+                    for (Submission submission : submissions) {
+                        if (submission.grade == null && gradedCount < countToGrade) {
+                            // Assign default grade between 7.0 and 9.5
+                            submission.grade = 7.0 + Math.random() * 2.5;
+                            submission.feedback = "Đã chấm tự động";
+                            database.submissionDao().update(submission);
+                            gradedCount++;
+                        }
+                    }
+                }
+                
                 submissionList.postValue(submissions);
                 isLoading.postValue(false);
 

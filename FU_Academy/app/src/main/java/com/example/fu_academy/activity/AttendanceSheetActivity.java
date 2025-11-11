@@ -62,6 +62,12 @@ public class AttendanceSheetActivity extends BaseTeacherActivity {
         tvSelectedDate = findViewById(R.id.tv_selected_date);
         btnSelectDate = findViewById(R.id.btn_select_date);
         btnSaveAttendance = findViewById(R.id.btn_save_attendance);
+        
+        // Setup back button
+        android.widget.ImageButton btnBack = findViewById(R.id.btn_back);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
         if (className != null) {
             tvClassName.setText(className);
@@ -147,13 +153,13 @@ public class AttendanceSheetActivity extends BaseTeacherActivity {
     }
 
     private void saveAttendance() {
-        List<AttendanceDetail> attendanceList = adapter.getAttendanceList();
+        List<AttendanceDetail> attendanceList = adapter.getAttendanceList(classId);
         if (attendanceList.isEmpty()) {
             Toast.makeText(this, "No attendance data to save", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Save attendance through ViewModel
-        attendanceViewModel.saveAttendance(attendanceList);
+        attendanceViewModel.saveAttendance(attendanceList, classId, selectedDate);
     }
 }

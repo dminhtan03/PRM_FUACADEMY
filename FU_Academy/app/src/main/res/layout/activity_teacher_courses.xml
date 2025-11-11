@@ -17,49 +17,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardElevation="4dp"
-            app:cardCornerRadius="0dp"
-            app:cardBackgroundColor="@android:color/white">
+            app:cardCornerRadius="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:padding="16dp"
                 android:background="@android:color/white">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="My Classes"
-                    android:textSize="28sp"
+                    android:text="My Courses"
+                    android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="#2C3E50"
-                    android:gravity="center"
-                    android:letterSpacing="0.05" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Quản lý các lớp học của bạn"
-                    android:textSize="14sp"
-                    android:textColor="#7F8C8D"
-                    android:gravity="center"
-                    android:layout_marginTop="4dp" />
+                    android:gravity="center" />
 
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>
 
-        <!-- Classes List -->
+        <!-- Courses List -->
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_classes"
+            android:id="@+id/recycler_view_courses"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="12dp"
-            android:paddingTop="16dp"
+            android:padding="8dp"
             android:paddingBottom="16dp"
-            android:clipToPadding="false"
-            android:scrollbars="vertical" />
+            android:clipToPadding="false" />
 
     </LinearLayout>
 
@@ -67,3 +54,4 @@
     <include layout="@layout/bottom_navigation_teacher" />
 
 </RelativeLayout>
+

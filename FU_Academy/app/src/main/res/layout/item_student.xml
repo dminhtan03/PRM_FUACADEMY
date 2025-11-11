@@ -123,36 +123,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="end">
-
-            <Button
-                android:id="@+id/btn_view_profile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Profile"
-                android:textSize="12sp"
-                android:backgroundTint="#3498DB"
-                android:layout_marginEnd="8dp"
-                style="?attr/materialButtonOutlinedStyle" />
+            android:gravity="center"
+            android:weightSum="2">
 
             <Button
                 android:id="@+id/btn_attendance"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Attendance"
                 android:textSize="12sp"
+                android:textStyle="bold"
                 android:backgroundTint="#2ECC71"
-                android:layout_marginEnd="8dp"
-                style="?attr/materialButtonOutlinedStyle" />
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="6dp"
+                android:padding="10dp"
+                android:minHeight="40dp" />
 
             <Button
                 android:id="@+id/btn_grade"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Grade"
                 android:textSize="12sp"
+                android:textStyle="bold"
                 android:backgroundTint="#F39C12"
-                style="?attr/materialButtonOutlinedStyle" />
+                android:textColor="@android:color/white"
+                android:padding="10dp"
+                android:minHeight="40dp" />
 
         </LinearLayout>
 

@@ -18,9 +18,9 @@ public abstract class BaseTeacherActivity extends AppCompatActivity {
 
     // Bottom navigation components
     private LinearLayout bottomNavigationContainer;
-    private LinearLayout tabDashboard, tabMyClasses, tabAttendance, tabGrade, tabUpload;
-    private ImageView iconDashboard, iconMyClasses, iconAttendance, iconGrade, iconUpload;
-    private TextView labelDashboard, labelMyClasses, labelAttendance, labelGrade, labelUpload;
+    private LinearLayout tabDashboard, tabMyClasses, tabCourse, tabSettings;
+    private ImageView iconDashboard, iconMyClasses, iconCourse, iconSettings;
+    private TextView labelDashboard, labelMyClasses, labelCourse, labelSettings;
 
     // Current tab index for highlighting
     private int currentTabIndex = -1;
@@ -54,21 +54,18 @@ public abstract class BaseTeacherActivity extends AppCompatActivity {
 
         tabDashboard = findViewById(R.id.tab_dashboard);
         tabMyClasses = findViewById(R.id.tab_my_classes);
-        tabAttendance = findViewById(R.id.tab_attendance);
-        tabGrade = findViewById(R.id.tab_grade);
-        tabUpload = findViewById(R.id.tab_upload);
+        tabCourse = findViewById(R.id.tab_course);
+        tabSettings = findViewById(R.id.tab_settings);
 
         iconDashboard = findViewById(R.id.icon_dashboard);
         iconMyClasses = findViewById(R.id.icon_my_classes);
-        iconAttendance = findViewById(R.id.icon_attendance);
-        iconGrade = findViewById(R.id.icon_grade);
-        iconUpload = findViewById(R.id.icon_upload);
+        iconCourse = findViewById(R.id.icon_course);
+        iconSettings = findViewById(R.id.icon_settings);
 
         labelDashboard = findViewById(R.id.label_dashboard);
         labelMyClasses = findViewById(R.id.label_my_classes);
-        labelAttendance = findViewById(R.id.label_attendance);
-        labelGrade = findViewById(R.id.label_grade);
-        labelUpload = findViewById(R.id.label_upload);
+        labelCourse = findViewById(R.id.label_course);
+        labelSettings = findViewById(R.id.label_settings);
 
         // Set up click listeners
         setupBottomNavClickListeners();
@@ -79,19 +76,16 @@ public abstract class BaseTeacherActivity extends AppCompatActivity {
 
     private void setupBottomNavClickListeners() {
         if (tabDashboard != null) {
-            tabDashboard.setOnClickListener(v -> navigateToTab(-1)); // Dashboard
+            tabDashboard.setOnClickListener(v -> navigateToTab(-1)); // Home (Dashboard)
         }
         if (tabMyClasses != null) {
-            tabMyClasses.setOnClickListener(v -> navigateToTab(0));
+            tabMyClasses.setOnClickListener(v -> navigateToTab(0)); // Class
         }
-        if (tabAttendance != null) {
-            tabAttendance.setOnClickListener(v -> navigateToTab(1));
+        if (tabCourse != null) {
+            tabCourse.setOnClickListener(v -> navigateToTab(1)); // Course
         }
-        if (tabGrade != null) {
-            tabGrade.setOnClickListener(v -> navigateToTab(2));
-        }
-        if (tabUpload != null) {
-            tabUpload.setOnClickListener(v -> navigateToTab(3));
+        if (tabSettings != null) {
+            tabSettings.setOnClickListener(v -> navigateToTab(2)); // Setting
         }
     }
 
@@ -112,13 +106,10 @@ public abstract class BaseTeacherActivity extends AppCompatActivity {
                 isCurrentActivity = currentClassName.equals("MyClassesActivity");
                 break;
             case 1:
-                isCurrentActivity = currentClassName.equals("AttendanceSheetActivity");
+                isCurrentActivity = currentClassName.equals("TeacherCoursesActivity");
                 break;
             case 2:
-                isCurrentActivity = currentClassName.equals("GradeInputActivity");
-                break;
-            case 3:
-                isCurrentActivity = currentClassName.equals("UploadMaterialActivity");
+                isCurrentActivity = currentClassName.equals("SettingsActivity");
                 break;
         }
 
@@ -130,27 +121,24 @@ public abstract class BaseTeacherActivity extends AppCompatActivity {
                 intent = new Intent(this, MyClassesActivity.class);
                 break;
             case 1:
-                intent = new Intent(this, AttendanceSheetActivity.class);
+                intent = new Intent(this, TeacherCoursesActivity.class);
                 break;
             case 2:
-                intent = new Intent(this, GradeInputActivity.class);
-                break;
-            case 3:
-                intent = new Intent(this, UploadMaterialActivity.class);
+                intent = new Intent(this, SettingsActivity.class);
                 break;
             default:
                 return;
         }
 
         intent.putExtra("lecturer_id", lecturerId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
         overridePendingTransition(0, 0);
 
-        // Finish current activity unless it's the dashboard
-        if (!currentClassName.equals("TeacherDashboardActivity")) {
-            finish();
-        }
+        // Always finish current activity when navigating to a different tab
+        // This ensures proper navigation flow
+        finish();
     }
 
     private void highlightCurrentTab() {
@@ -166,15 +154,12 @@ public abstract class BaseTeacherActivity extends AppCompatActivity {
         } else if (currentClassName.equals("MyClassesActivity")) {
             currentTabIndex = 0;
             setTabActive(iconMyClasses, labelMyClasses);
-        } else if (currentClassName.equals("AttendanceSheetActivity")) {
+        } else if (currentClassName.equals("TeacherCoursesActivity")) {
             currentTabIndex = 1;
-            setTabActive(iconAttendance, labelAttendance);
-        } else if (currentClassName.equals("GradeInputActivity")) {
+            setTabActive(iconCourse, labelCourse);
+        } else if (currentClassName.equals("SettingsActivity")) {
             currentTabIndex = 2;
-            setTabActive(iconGrade, labelGrade);
-        } else if (currentClassName.equals("UploadMaterialActivity")) {
-            currentTabIndex = 3;
-            setTabActive(iconUpload, labelUpload);
+            setTabActive(iconSettings, labelSettings);
         }
     }
 
@@ -189,17 +174,13 @@ public abstract class BaseTeacherActivity extends AppCompatActivity {
             iconMyClasses.setColorFilter(inactiveColor);
             labelMyClasses.setTextColor(inactiveColor);
         }
-        if (iconAttendance != null) {
-            iconAttendance.setColorFilter(inactiveColor);
-            labelAttendance.setTextColor(inactiveColor);
+        if (iconCourse != null) {
+            iconCourse.setColorFilter(inactiveColor);
+            labelCourse.setTextColor(inactiveColor);
         }
-        if (iconGrade != null) {
-            iconGrade.setColorFilter(inactiveColor);
-            labelGrade.setTextColor(inactiveColor);
-        }
-        if (iconUpload != null) {
-            iconUpload.setColorFilter(inactiveColor);
-            labelUpload.setTextColor(inactiveColor);
+        if (iconSettings != null) {
+            iconSettings.setColorFilter(inactiveColor);
+            labelSettings.setTextColor(inactiveColor);
         }
     }
 

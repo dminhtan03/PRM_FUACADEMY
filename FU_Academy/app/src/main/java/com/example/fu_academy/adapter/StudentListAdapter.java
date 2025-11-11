@@ -19,7 +19,6 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
     private OnStudentClickListener listener;
 
     public interface OnStudentClickListener {
-        void onStudentClick(StudentInfo studentInfo);
         void onAttendanceClick(StudentInfo studentInfo);
         void onGradeClick(StudentInfo studentInfo);
     }
@@ -54,7 +53,7 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
 
     static class StudentViewHolder extends RecyclerView.ViewHolder {
         private TextView tvStudentName, tvStudentId, tvEmail, tvAttendanceRate, tvGrade;
-        private Button btnViewProfile, btnAttendance, btnGrade;
+        private Button btnAttendance, btnGrade;
 
         public StudentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -63,7 +62,6 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
             tvEmail = itemView.findViewById(R.id.tv_email);
             tvAttendanceRate = itemView.findViewById(R.id.tv_attendance_rate);
             tvGrade = itemView.findViewById(R.id.tv_grade);
-            btnViewProfile = itemView.findViewById(R.id.btn_view_profile);
             btnAttendance = itemView.findViewById(R.id.btn_attendance);
             btnGrade = itemView.findViewById(R.id.btn_grade);
         }
@@ -72,7 +70,14 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
             tvStudentName.setText(studentInfo.getStudentName());
             tvStudentId.setText(studentInfo.getStudentId_text());
             tvEmail.setText(studentInfo.getStudentEmail());
-            tvAttendanceRate.setText(String.format("%.1f%%", studentInfo.getAttendanceRate()));
+            
+            // Format attendance rate
+            double attendanceRate = studentInfo.getAttendanceRate();
+            if (attendanceRate > 0) {
+                tvAttendanceRate.setText(String.format("%.1f%%", attendanceRate));
+            } else {
+                tvAttendanceRate.setText("0.0%");
+            }
 
             if (studentInfo.getAverageGrade() != null) {
                 tvGrade.setText(String.format("%.1f", studentInfo.getAverageGrade()));
@@ -80,7 +85,6 @@ public class StudentListAdapter extends RecyclerView.Adapter<StudentListAdapter.
                 tvGrade.setText("N/A");
             }
 
-            btnViewProfile.setOnClickListener(v -> listener.onStudentClick(studentInfo));
             btnAttendance.setOnClickListener(v -> listener.onAttendanceClick(studentInfo));
             btnGrade.setOnClickListener(v -> listener.onGradeClick(studentInfo));
         }

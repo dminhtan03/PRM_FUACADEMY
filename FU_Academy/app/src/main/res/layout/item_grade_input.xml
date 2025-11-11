@@ -4,8 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,12 +14,13 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Student Info -->
+        <!-- Student Info Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -39,6 +41,7 @@
                     android:id="@+id/tv_file_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
                     android:text="assignment.pdf"
                     android:textSize="12sp"
                     android:textColor="#7F8C8D" />
@@ -52,56 +55,88 @@
                 android:text="2023-11-10"
                 android:textSize="12sp"
                 android:textColor="#7F8C8D"
-                android:gravity="end" />
+                android:background="#F0F0F0"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
 
         </LinearLayout>
 
-        <!-- Grade Input -->
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Grade Input Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Grade"
+            android:textSize="12sp"
+            android:textColor="#7F8C8D"
+            android:layout_marginBottom="8dp" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Grade: "
-                android:textSize="14sp"
-                android:textColor="#2C3E50"
-                android:layout_gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp"
+            android:background="#F8F9FA"
+            android:padding="12dp">
 
             <EditText
                 android:id="@+id/et_grade"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
                 android:hint="0.0"
                 android:inputType="numberDecimal"
-                android:textSize="14sp"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 android:gravity="center"
-                android:layout_marginStart="8dp" />
+                android:background="@android:drawable/edit_text"
+                android:padding="12dp"
+                android:textColor="#2C3E50" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" / 10"
-                android:textSize="14sp"
+                android:text="/ 10"
+                android:textSize="16sp"
                 android:textColor="#7F8C8D"
-                android:layout_gravity="center_vertical" />
+                android:layout_marginStart="12dp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
-        <!-- Feedback Input -->
+        <!-- Feedback Input Section -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Feedback (Optional)"
+            android:textSize="12sp"
+            android:textColor="#7F8C8D"
+            android:layout_marginBottom="8dp" />
+
         <EditText
             android:id="@+id/et_feedback"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Feedback (Optional)"
+            android:minHeight="80dp"
+            android:hint="Enter your feedback here..."
             android:inputType="textMultiLine"
-            android:lines="2"
+            android:lines="3"
+            android:maxLines="5"
             android:textSize="14sp"
-            android:background="@drawable/edit_text_background"
-            android:padding="12dp" />
+            android:background="@android:drawable/edit_text"
+            android:padding="12dp"
+            android:gravity="top|start"
+            android:textColor="#2C3E50"
+            android:textColorHint="#95A5A6" />
 
     </LinearLayout>
 

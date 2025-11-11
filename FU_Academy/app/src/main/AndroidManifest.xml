@@ -50,6 +50,8 @@
         <activity android:name=".activity.AttendanceSheetActivity" />
         <activity android:name=".activity.GradeInputActivity" />
         <activity android:name=".activity.UploadMaterialActivity" />
+        <activity android:name=".activity.SettingsActivity" />
+        <activity android:name=".activity.TeacherCoursesActivity" />
     </application>
 
 </manifest>

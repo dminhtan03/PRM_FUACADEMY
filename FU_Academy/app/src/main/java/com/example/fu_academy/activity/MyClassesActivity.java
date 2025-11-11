@@ -94,9 +94,8 @@ public class MyClassesActivity extends BaseTeacherActivity implements ClassListA
 
     @Override
     public void onMaterialClick(ClassInfo classInfo) {
-        Intent intent = new Intent(this, UploadMaterialActivity.class);
-        intent.putExtra("class_id", classInfo.getClassId());
-        intent.putExtra("class_name", classInfo.getCourseName());
-        startActivity(intent);
+        // Material upload functionality has been removed
+        // Show message that this functionality is no longer available
+        Toast.makeText(this, "Chức năng tải lên tài liệu đã được gỡ bỏ", Toast.LENGTH_SHORT).show();
     }
 }

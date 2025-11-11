@@ -57,6 +57,12 @@ public class GradeInputActivity extends BaseTeacherActivity {
         tvClassName = findViewById(R.id.tv_class_name);
         spinnerAssignments = findViewById(R.id.spinner_assignments);
         btnSaveGrades = findViewById(R.id.btn_save_grades);
+        
+        // Setup back button
+        android.widget.ImageButton btnBack = findViewById(R.id.btn_back);
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
         if (className != null) {
             tvClassName.setText(className);

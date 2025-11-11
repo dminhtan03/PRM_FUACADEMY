@@ -31,4 +31,7 @@ public interface CourseDao {
            "INNER JOIN Enrollment e ON cl.class_id = e.class_id " +
            "WHERE e.student_id = :studentId")
     List<Course> getCoursesByStudent(long studentId);
+
+    @Query("SELECT * FROM Course WHERE course_code = :courseCode")
+    Course getByCode(String courseCode);
 }

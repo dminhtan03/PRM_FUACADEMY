@@ -24,13 +24,12 @@ public class TeacherDashboardActivity extends BaseTeacherActivity {
     // Dashboard summary views
     private TextView tvCourseCount, tvStudentCount, tvPendingTasks;
     private TextView tvAverageGrade, tvFeedbackCount, tvAttendanceRate;
-    private TextView tvUpcomingClass;
 
-    // Tab components
-    private LinearLayout tabMyClasses, tabAttendance, tabGrade, tabUpload;
-    private LinearLayout contentMyClasses, contentAttendance, contentGrade, contentUpload;
-    private ImageView iconMyClasses, iconAttendance, iconGrade, iconUpload;
-    private TextView labelMyClasses, labelAttendance, labelGrade, labelUpload;
+    // Tab components (for preview in dashboard)
+    private LinearLayout tabMyClasses, tabCourse, tabSettings;
+    private LinearLayout contentMyClasses, contentCourse, contentSettings;
+    private ImageView iconMyClasses, iconCourse, iconSettings;
+    private TextView labelMyClasses, labelCourse, labelSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,30 +53,25 @@ public class TeacherDashboardActivity extends BaseTeacherActivity {
         tvAverageGrade = findViewById(R.id.tv_average_grade);
         tvFeedbackCount = findViewById(R.id.tv_feedback_count);
         tvAttendanceRate = findViewById(R.id.tv_attendance_rate);
-        tvUpcomingClass = findViewById(R.id.tv_upcoming_class);
 
-        // Tab components
+        // Tab components (for preview in dashboard)
         tabMyClasses = findViewById(R.id.tab_my_classes);
-        tabAttendance = findViewById(R.id.tab_attendance);
-        tabGrade = findViewById(R.id.tab_grade);
-        tabUpload = findViewById(R.id.tab_upload);
+        tabCourse = findViewById(R.id.tab_course);
+        tabSettings = findViewById(R.id.tab_settings);
 
         // Tab content layouts
         contentMyClasses = findViewById(R.id.content_my_classes);
-        contentAttendance = findViewById(R.id.content_attendance);
-        contentGrade = findViewById(R.id.content_grade);
-        contentUpload = findViewById(R.id.content_upload);
+        contentCourse = findViewById(R.id.content_course);
+        contentSettings = findViewById(R.id.content_settings);
 
         // Tab icons and labels
         iconMyClasses = findViewById(R.id.icon_my_classes);
-        iconAttendance = findViewById(R.id.icon_attendance);
-        iconGrade = findViewById(R.id.icon_grade);
-        iconUpload = findViewById(R.id.icon_upload);
+        iconCourse = findViewById(R.id.icon_course);
+        iconSettings = findViewById(R.id.icon_settings);
 
         labelMyClasses = findViewById(R.id.label_my_classes);
-        labelAttendance = findViewById(R.id.label_attendance);
-        labelGrade = findViewById(R.id.label_grade);
-        labelUpload = findViewById(R.id.label_upload);
+        labelCourse = findViewById(R.id.label_course);
+        labelSettings = findViewById(R.id.label_settings);
     }
 
     private void setupViewModel() {
@@ -103,81 +97,70 @@ public class TeacherDashboardActivity extends BaseTeacherActivity {
 
 
     private void setupClickListeners() {
-        // Tab bar navigation is handled by BaseTeacherActivity
-        // Just handle tab content switching for dashboard preview
-        tabMyClasses.setOnClickListener(v -> switchTab(0));
-        tabAttendance.setOnClickListener(v -> switchTab(1));
-        tabGrade.setOnClickListener(v -> switchTab(2));
-        tabUpload.setOnClickListener(v -> switchTab(3));
+        // Note: Bottom navigation tabs are handled by BaseTeacherActivity
+        // These are for the preview tabs in the dashboard content area only
+        // Do not override bottom navigation behavior here
 
         // Content area click listeners - navigate to actual activities
-        contentMyClasses.setOnClickListener(v -> {
-            Intent intent = new Intent(this, MyClassesActivity.class);
-            intent.putExtra("lecturer_id", lecturerId);
-            startActivity(intent);
-        });
+        if (contentMyClasses != null) {
+            contentMyClasses.setOnClickListener(v -> {
+                Intent intent = new Intent(this, MyClassesActivity.class);
+                intent.putExtra("lecturer_id", lecturerId);
+                startActivity(intent);
+            });
+        }
 
-        contentAttendance.setOnClickListener(v -> {
-            Intent intent = new Intent(this, AttendanceSheetActivity.class);
-            intent.putExtra("lecturer_id", lecturerId);
-            startActivity(intent);
-        });
+        if (contentCourse != null) {
+            contentCourse.setOnClickListener(v -> {
+                Intent intent = new Intent(this, TeacherCoursesActivity.class);
+                intent.putExtra("lecturer_id", lecturerId);
+                startActivity(intent);
+            });
+        }
 
-        contentGrade.setOnClickListener(v -> {
-            Intent intent = new Intent(this, GradeInputActivity.class);
-            intent.putExtra("lecturer_id", lecturerId);
-            startActivity(intent);
-        });
-
-        contentUpload.setOnClickListener(v -> {
-            Intent intent = new Intent(this, UploadMaterialActivity.class);
-            intent.putExtra("lecturer_id", lecturerId);
-            startActivity(intent);
-        });
+        if (contentSettings != null) {
+            contentSettings.setOnClickListener(v -> {
+                Intent intent = new Intent(this, SettingsActivity.class);
+                intent.putExtra("lecturer_id", lecturerId);
+                startActivity(intent);
+            });
+        }
     }
 
     private void switchTab(int tabIndex) {
         // Hide all content layouts
-        contentMyClasses.setVisibility(View.GONE);
-        contentAttendance.setVisibility(View.GONE);
-        contentGrade.setVisibility(View.GONE);
-        contentUpload.setVisibility(View.GONE);
+        if (contentMyClasses != null) contentMyClasses.setVisibility(View.GONE);
+        if (contentCourse != null) contentCourse.setVisibility(View.GONE);
+        if (contentSettings != null) contentSettings.setVisibility(View.GONE);
 
         // Reset all tab colors to inactive
         int inactiveColor = ContextCompat.getColor(this, R.color.bottom_nav_unselected);
         int activeColor = ContextCompat.getColor(this, R.color.bottom_nav_selected);
 
-        iconMyClasses.setColorFilter(inactiveColor);
-        iconAttendance.setColorFilter(inactiveColor);
-        iconGrade.setColorFilter(inactiveColor);
-        iconUpload.setColorFilter(inactiveColor);
+        if (iconMyClasses != null) iconMyClasses.setColorFilter(inactiveColor);
+        if (iconCourse != null) iconCourse.setColorFilter(inactiveColor);
+        if (iconSettings != null) iconSettings.setColorFilter(inactiveColor);
 
-        labelMyClasses.setTextColor(inactiveColor);
-        labelAttendance.setTextColor(inactiveColor);
-        labelGrade.setTextColor(inactiveColor);
-        labelUpload.setTextColor(inactiveColor);
+        if (labelMyClasses != null) labelMyClasses.setTextColor(inactiveColor);
+        if (labelCourse != null) labelCourse.setTextColor(inactiveColor);
+        if (labelSettings != null) labelSettings.setTextColor(inactiveColor);
 
         // Show selected tab content and highlight tab
         switch (tabIndex) {
             case 0:
-                contentMyClasses.setVisibility(View.VISIBLE);
-                iconMyClasses.setColorFilter(activeColor);
-                labelMyClasses.setTextColor(activeColor);
+                if (contentMyClasses != null) contentMyClasses.setVisibility(View.VISIBLE);
+                if (iconMyClasses != null) iconMyClasses.setColorFilter(activeColor);
+                if (labelMyClasses != null) labelMyClasses.setTextColor(activeColor);
                 break;
             case 1:
-                contentAttendance.setVisibility(View.VISIBLE);
-                iconAttendance.setColorFilter(activeColor);
-                labelAttendance.setTextColor(activeColor);
+                if (contentCourse != null) contentCourse.setVisibility(View.VISIBLE);
+                if (iconCourse != null) iconCourse.setColorFilter(activeColor);
+                if (labelCourse != null) labelCourse.setTextColor(activeColor);
                 break;
             case 2:
-                contentGrade.setVisibility(View.VISIBLE);
-                iconGrade.setColorFilter(activeColor);
-                labelGrade.setTextColor(activeColor);
-                break;
-            case 3:
-                contentUpload.setVisibility(View.VISIBLE);
-                iconUpload.setColorFilter(activeColor);
-                labelUpload.setTextColor(activeColor);
+                if (contentSettings != null) contentSettings.setVisibility(View.VISIBLE);
+                if (iconSettings != null) iconSettings.setColorFilter(activeColor);
+                if (labelSettings != null) labelSettings.setTextColor(activeColor);
                 break;
         }
     }
@@ -205,8 +188,6 @@ public class TeacherDashboardActivity extends BaseTeacherActivity {
             } else {
                 tvAttendanceRate.setText("N/A");
             }
-
-            tvUpcomingClass.setText(summary.getUpcomingClass());
         }
     }
 

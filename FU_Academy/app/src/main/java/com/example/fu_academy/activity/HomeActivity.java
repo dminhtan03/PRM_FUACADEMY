@@ -98,10 +98,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                     }
                     loadDashboardData();
                 } else if ("lecturer".equalsIgnoreCase(user.role)) {
-                    // Redirect lecturer to Teacher Dashboard
+                    // Redirect lecturer to Teacher Dashboard (Home tab)
                     Intent intent = new Intent(HomeActivity.this, TeacherDashboardActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-//                    finish();
+                    finish();
                 } else {
                     // Hide dashboard for other roles
                     if (dashboardContainer != null) {

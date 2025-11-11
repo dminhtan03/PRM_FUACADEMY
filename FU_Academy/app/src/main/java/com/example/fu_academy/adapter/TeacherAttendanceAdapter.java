@@ -54,7 +54,7 @@ public class TeacherAttendanceAdapter extends RecyclerView.Adapter<TeacherAttend
         notifyDataSetChanged();
     }
 
-    public List<AttendanceDetail> getAttendanceList() {
+    public List<AttendanceDetail> getAttendanceList(long classId) {
         List<AttendanceDetail> attendanceList = new ArrayList<>();
 
         for (StudentInfo student : studentList) {
@@ -67,7 +67,7 @@ public class TeacherAttendanceAdapter extends RecyclerView.Adapter<TeacherAttend
                 attendance.remark = "";
                 attendance.duration = 120; // Default 2 hours
                 attendance.type = "lecture";
-                // Note: schedule_id would need to be set based on the actual schedule
+                // schedule_id will be set in AttendanceViewModel
 
                 attendanceList.add(attendance);
             }

@@ -55,7 +55,7 @@ public class ClassListAdapter extends RecyclerView.Adapter<ClassListAdapter.Clas
 
     static class ClassViewHolder extends RecyclerView.ViewHolder {
         private TextView tvClassCode, tvCourseName, tvRoom, tvSchedule, tvSemester, tvStudentCount;
-        private Button btnViewStudents, btnAttendance, btnGrades, btnMaterials;
+        private Button btnViewStudents, btnAttendance, btnGrades;
 
         public ClassViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -68,7 +68,6 @@ public class ClassListAdapter extends RecyclerView.Adapter<ClassListAdapter.Clas
             btnViewStudents = itemView.findViewById(R.id.btn_view_students);
             btnAttendance = itemView.findViewById(R.id.btn_attendance);
             btnGrades = itemView.findViewById(R.id.btn_grades);
-            btnMaterials = itemView.findViewById(R.id.btn_materials);
         }
 
         public void bind(ClassInfo classInfo, OnClassClickListener listener) {
@@ -77,12 +76,11 @@ public class ClassListAdapter extends RecyclerView.Adapter<ClassListAdapter.Clas
             tvRoom.setText(classInfo.getRoom());
             tvSchedule.setText(classInfo.getSchedule());
             tvSemester.setText(classInfo.getSemester());
-            tvStudentCount.setText(String.valueOf(classInfo.getStudentCount()) + " students");
+            tvStudentCount.setText(String.valueOf(classInfo.getStudentCount()));
 
             btnViewStudents.setOnClickListener(v -> listener.onViewStudentsClick(classInfo));
             btnAttendance.setOnClickListener(v -> listener.onAttendanceClick(classInfo));
             btnGrades.setOnClickListener(v -> listener.onGradeClick(classInfo));
-            btnMaterials.setOnClickListener(v -> listener.onMaterialClick(classInfo));
         }
     }
 }

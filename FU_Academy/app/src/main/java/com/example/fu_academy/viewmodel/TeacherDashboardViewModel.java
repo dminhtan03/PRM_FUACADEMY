@@ -150,9 +150,9 @@ public class TeacherDashboardViewModel extends AndroidViewModel {
                 for (Enrollment enrollment : enrollments) {
                     User student = database.userDao().findById(enrollment.student_id);
 
-                    // Calculate attendance rate
-                    int presentCount = database.attendanceDetailDao().getPresentCount(enrollment.student_id);
-                    int totalCount = database.attendanceDetailDao().getTotalCount(enrollment.student_id);
+                    // Calculate attendance rate for this specific class
+                    int presentCount = database.attendanceDetailDao().getPresentCountByClass(enrollment.student_id, classId);
+                    int totalCount = database.attendanceDetailDao().getTotalCountByClass(enrollment.student_id, classId);
                     double attendanceRate = totalCount > 0 ? (double) presentCount / totalCount * 100 : 0.0;
 
                     StudentInfo studentInfo = new StudentInfo();
