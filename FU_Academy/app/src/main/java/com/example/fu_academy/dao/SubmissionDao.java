@@ -32,4 +32,11 @@ public interface SubmissionDao {
            "INNER JOIN Class c ON a.class_id = c.class_id " +
            "WHERE c.lecturer_id = :lecturerId AND s.grade IS NULL")
     int countPendingByLecturer(long lecturerId);
+
+    @Query("SELECT s.* FROM Submission s " +
+           "INNER JOIN Assignment a ON s.assignment_id = a.assignment_id " +
+           "INNER JOIN Enrollment e ON s.student_id = e.student_id " +
+           "WHERE a.assignment_id = :assignmentId AND e.class_id = :classId " +
+           "ORDER BY s.submit_date DESC")
+    List<Submission> getByAssignmentAndClass(long assignmentId, long classId);
 }

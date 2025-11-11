@@ -10,8 +10,12 @@ import com.example.fu_academy.database.EducationDatabase;
 import com.example.fu_academy.entity.Assignment;
 import com.example.fu_academy.entity.Submission;
 import com.example.fu_academy.entity.Enrollment;
+import com.example.fu_academy.entity.User;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,6 +25,7 @@ public class GradeInputViewModel extends AndroidViewModel {
 
     private MutableLiveData<List<Assignment>> assignmentList = new MutableLiveData<>();
     private MutableLiveData<List<Submission>> submissionList = new MutableLiveData<>();
+    private MutableLiveData<Map<Long, String>> studentNamesMap = new MutableLiveData<>();
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private MutableLiveData<String> successMessage = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
@@ -37,6 +42,10 @@ public class GradeInputViewModel extends AndroidViewModel {
 
     public LiveData<List<Submission>> getSubmissionList() {
         return submissionList;
+    }
+
+    public LiveData<Map<Long, String>> getStudentNamesMap() {
+        return studentNamesMap;
     }
 
     public LiveData<String> getErrorMessage() {
@@ -67,12 +76,62 @@ public class GradeInputViewModel extends AndroidViewModel {
         });
     }
 
-    public void loadSubmissions(long assignmentId) {
+    public void loadSubmissions(long assignmentId, long classId) {
         isLoading.postValue(true);
 
         executorService.execute(() -> {
             try {
-                List<Submission> submissions = database.submissionDao().getByAssignment(assignmentId);
+                // Get submissions for this assignment, filtered by students in this class
+                List<Submission> submissions = database.submissionDao().getByAssignmentAndClass(assignmentId, classId);
+                
+                // Get all students enrolled in this class
+                List<Enrollment> enrollments = database.enrollmentDao().getByClass(classId);
+                
+                // Build student names map
+                Map<Long, String> studentNames = new HashMap<>();
+                if (enrollments != null && !enrollments.isEmpty()) {
+                    for (Enrollment enrollment : enrollments) {
+                        User student = database.userDao().findById(enrollment.student_id);
+                        if (student != null) {
+                            studentNames.put(enrollment.student_id, student.name != null ? student.name : "Student " + enrollment.student_id);
+                        }
+                    }
+                }
+                
+                // Create submissions for students who haven't submitted yet
+                if (enrollments != null && !enrollments.isEmpty()) {
+                    if (submissions == null) {
+                        submissions = new ArrayList<>();
+                    }
+                    
+                    for (Enrollment enrollment : enrollments) {
+                        // Check if student already has a submission
+                        boolean hasSubmission = false;
+                        for (Submission sub : submissions) {
+                            if (sub.student_id == enrollment.student_id) {
+                                hasSubmission = true;
+                                break;
+                            }
+                        }
+                        
+                        // If no submission exists, create a placeholder (not submitted yet)
+                        if (!hasSubmission) {
+                            Submission placeholder = new Submission();
+                            placeholder.assignment_id = assignmentId;
+                            placeholder.student_id = enrollment.student_id;
+                            placeholder.grade = null;
+                            placeholder.feedback = null;
+                            placeholder.submit_date = null;
+                            placeholder.file_name = null;
+                            placeholder.file_url = null;
+                            placeholder.status = "Not submitted";
+                            // submission_id will be 0 for placeholder (not inserted yet)
+                            placeholder.submission_id = 0;
+                            
+                            submissions.add(placeholder);
+                        }
+                    }
+                }
                 
                 // Auto-grade 2-3 submissions with default scores if they don't have grades
                 if (submissions != null && !submissions.isEmpty()) {
@@ -80,7 +139,8 @@ public class GradeInputViewModel extends AndroidViewModel {
                     int gradedCount = 0;
                     
                     for (Submission submission : submissions) {
-                        if (submission.grade == null && gradedCount < countToGrade) {
+                        // Only auto-grade if submission exists (not placeholder) and has no grade
+                        if (submission.submission_id > 0 && submission.submit_date != null && submission.grade == null && gradedCount < countToGrade) {
                             // Assign default grade between 7.0 and 9.5
                             submission.grade = 7.0 + Math.random() * 2.5;
                             submission.feedback = "Đã chấm tự động";
@@ -90,6 +150,7 @@ public class GradeInputViewModel extends AndroidViewModel {
                     }
                 }
                 
+                studentNamesMap.postValue(studentNames);
                 submissionList.postValue(submissions);
                 isLoading.postValue(false);
 
@@ -105,9 +166,17 @@ public class GradeInputViewModel extends AndroidViewModel {
 
         executorService.execute(() -> {
             try {
-                // Update submissions with grades
+                // Update or insert submissions with grades
                 for (Submission submission : updatedSubmissions) {
-                    database.submissionDao().update(submission);
+                    // If submission_id is 0, it's a placeholder - skip (can't grade non-submitted work)
+                    if (submission.submission_id == 0) {
+                        continue;
+                    }
+                    
+                    // Only update if grade or feedback is provided
+                    if (submission.grade != null || (submission.feedback != null && !submission.feedback.isEmpty())) {
+                        database.submissionDao().update(submission);
+                    }
                 }
 
                 // Recalculate average grades for affected students

@@ -49,8 +49,23 @@ public class TeacherAttendanceAdapter extends RecyclerView.Adapter<TeacherAttend
     public void updateStudentList(List<StudentInfo> newList, String date) {
         this.studentList = newList;
         this.selectedDate = date;
-        // Reset attendance status for new date
+        // Don't clear attendance status here - it will be updated by updateAttendanceStatus
+        notifyDataSetChanged();
+    }
+
+    public void updateAttendanceStatus(List<AttendanceDetail> attendanceDetails) {
+        // Clear existing status
         attendanceStatus.clear();
+        
+        // Populate status from saved attendance data
+        if (attendanceDetails != null && !attendanceDetails.isEmpty()) {
+            for (AttendanceDetail attendance : attendanceDetails) {
+                if (attendance.status != null && !attendance.status.isEmpty()) {
+                    attendanceStatus.put(attendance.student_id, attendance.status);
+                }
+            }
+        }
+        
         notifyDataSetChanged();
     }
 

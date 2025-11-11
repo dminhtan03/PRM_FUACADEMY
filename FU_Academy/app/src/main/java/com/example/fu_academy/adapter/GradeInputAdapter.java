@@ -23,9 +23,15 @@ public class GradeInputAdapter extends RecyclerView.Adapter<GradeInputAdapter.Gr
     private List<Submission> submissionList;
     private Map<Long, Double> gradeUpdates = new HashMap<>();
     private Map<Long, String> feedbackUpdates = new HashMap<>();
+    private Map<Long, String> studentNamesMap = new HashMap<>();
 
     public GradeInputAdapter(List<Submission> submissionList) {
         this.submissionList = submissionList;
+    }
+
+    public void setStudentNamesMap(Map<Long, String> studentNamesMap) {
+        this.studentNamesMap = studentNamesMap != null ? studentNamesMap : new HashMap<>();
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -38,7 +44,7 @@ public class GradeInputAdapter extends RecyclerView.Adapter<GradeInputAdapter.Gr
     @Override
     public void onBindViewHolder(@NonNull GradeViewHolder holder, int position) {
         Submission submission = submissionList.get(position);
-        holder.bind(submission, gradeUpdates, feedbackUpdates);
+        holder.bind(submission, gradeUpdates, feedbackUpdates, studentNamesMap);
     }
 
     @Override
@@ -57,6 +63,11 @@ public class GradeInputAdapter extends RecyclerView.Adapter<GradeInputAdapter.Gr
         List<Submission> updatedSubmissions = new ArrayList<>();
 
         for (Submission submission : submissionList) {
+            // Skip placeholder submissions (submission_id = 0 means not submitted yet)
+            if (submission.submission_id == 0) {
+                continue;
+            }
+            
             boolean hasUpdates = false;
 
             if (gradeUpdates.containsKey(submission.submission_id)) {
@@ -77,7 +88,7 @@ public class GradeInputAdapter extends RecyclerView.Adapter<GradeInputAdapter.Gr
         return updatedSubmissions;
     }
 
-    static class GradeViewHolder extends RecyclerView.ViewHolder {
+    class GradeViewHolder extends RecyclerView.ViewHolder {
         private TextView tvStudentName, tvFileName, tvSubmitDate;
         private EditText etGrade, etFeedback;
 
@@ -90,11 +101,22 @@ public class GradeInputAdapter extends RecyclerView.Adapter<GradeInputAdapter.Gr
             etFeedback = itemView.findViewById(R.id.et_feedback);
         }
 
-        public void bind(Submission submission, Map<Long, Double> gradeUpdates, Map<Long, String> feedbackUpdates) {
-            // Note: In a real implementation, you'd need to get student name from User entity
-            tvStudentName.setText("Student ID: " + submission.student_id);
-            tvFileName.setText(submission.file_name != null ? submission.file_name : "No file");
-            tvSubmitDate.setText(submission.submit_date != null ? submission.submit_date : "N/A");
+        public void bind(Submission submission, Map<Long, Double> gradeUpdates, Map<Long, String> feedbackUpdates, Map<Long, String> studentNamesMap) {
+            // Get student name from map
+            String studentName = studentNamesMap != null ? studentNamesMap.get(submission.student_id) : null;
+            if (studentName == null || studentName.isEmpty()) {
+                studentName = "Student " + submission.student_id;
+            }
+            tvStudentName.setText(studentName);
+            
+            // Show file name or status
+            if (submission.submit_date == null || submission.submit_date.isEmpty()) {
+                tvFileName.setText("Chưa nộp bài");
+                tvSubmitDate.setText("N/A");
+            } else {
+                tvFileName.setText(submission.file_name != null ? submission.file_name : "Đã nộp");
+                tvSubmitDate.setText(submission.submit_date);
+            }
 
             // Set current grade and feedback
             if (submission.grade != null) {

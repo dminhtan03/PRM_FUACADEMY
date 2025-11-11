@@ -74,6 +74,11 @@ public class GradeInputActivity extends BaseTeacherActivity {
 
         viewModel.getAssignmentList().observe(this, this::updateAssignmentSpinner);
         viewModel.getSubmissionList().observe(this, this::updateSubmissionList);
+        viewModel.getStudentNamesMap().observe(this, studentNamesMap -> {
+            if (studentNamesMap != null) {
+                adapter.setStudentNamesMap(studentNamesMap);
+            }
+        });
 
         viewModel.getErrorMessage().observe(this, errorMessage -> {
             if (errorMessage != null && !errorMessage.isEmpty()) {
@@ -145,8 +150,8 @@ public class GradeInputActivity extends BaseTeacherActivity {
     }
 
     private void loadSubmissions() {
-        if (selectedAssignment != null) {
-            viewModel.loadSubmissions(selectedAssignment.assignment_id);
+        if (selectedAssignment != null && classId > 0) {
+            viewModel.loadSubmissions(selectedAssignment.assignment_id, classId);
         }
     }
 

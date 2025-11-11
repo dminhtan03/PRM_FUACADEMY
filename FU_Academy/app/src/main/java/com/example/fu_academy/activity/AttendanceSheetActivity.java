@@ -100,8 +100,13 @@ public class AttendanceSheetActivity extends BaseTeacherActivity {
         attendanceViewModel.getSuccessMessage().observe(this, successMessage -> {
             if (successMessage != null && !successMessage.isEmpty()) {
                 Toast.makeText(this, successMessage, Toast.LENGTH_SHORT).show();
+                // Reload attendance after saving to show updated status
+                loadAttendanceForDate();
             }
         });
+
+        // Observe attendance list to load saved attendance status
+        attendanceViewModel.getAttendanceList().observe(this, this::updateAttendanceStatus);
     }
 
     private void setupRecyclerView() {
@@ -147,9 +152,21 @@ public class AttendanceSheetActivity extends BaseTeacherActivity {
 
     private void loadAttendanceForDate() {
         // Load existing attendance data for the selected date
-        // This would be implemented in AttendanceViewModel
-        // For now, we'll just update the adapter with empty attendance
-        adapter.updateStudentList(studentList, selectedDate);
+        if (classId > 0 && selectedDate != null && !selectedDate.isEmpty()) {
+            attendanceViewModel.loadAttendanceByClassAndDate(classId, selectedDate);
+        }
+    }
+
+    private void updateAttendanceStatus(List<AttendanceDetail> attendanceDetails) {
+        // Always update student list first to ensure it's set
+        if (studentList != null && !studentList.isEmpty()) {
+            adapter.updateStudentList(studentList, selectedDate);
+        }
+        
+        // Then update attendance status from saved data
+        if (attendanceDetails != null && !attendanceDetails.isEmpty()) {
+            adapter.updateAttendanceStatus(attendanceDetails);
+        }
     }
 
     private void saveAttendance() {
